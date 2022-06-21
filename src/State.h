@@ -17,6 +17,7 @@ class State {
     private:
         Sprite bg;
         Music* music; // @TODO: fix this
+        Music music1;
         bool quitRequested;
 
         

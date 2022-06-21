@@ -14,9 +14,11 @@ State::State(SDL_Renderer* renderer)
     quitRequested = false;
     bg = Sprite("./assets/image/ocean.jpg", renderer); // @TODO: fix this
     music = new Music("./assets/audio/stageState.ogg"); // @TODO: fix this
+    // music1 = Music("./assets/audio/stageState.ogg");
     // music = new Music("./assets/audio/choochoo.wav"); // @TODO: debug
     
     (*music).Play(1);
+    // music1.Play(1);
 
     cout << "State created successfully!" << endl;
 }
@@ -37,7 +39,7 @@ void State::Update(float dt)
 
 void State::Render()
 {
-    bg.Render(0, 0);
+    bg.Render(0, 0); // @TODO: fix this
 }
 
 bool State::QuitRequested()
