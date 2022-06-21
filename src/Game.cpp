@@ -63,7 +63,13 @@ Game::Game(const char* title, int width, int height)
     Mix_AllocateChannels(32);
 
     // Creates game window
-    if ((window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0)) == nullptr)
+    if ((window = SDL_CreateWindow(
+        title,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        width,
+        height,
+        0)) == nullptr)
     {
         cout << "Error creating window" << endl;
         cout << SDL_GetError() << endl;
@@ -124,6 +130,8 @@ void Game::Run()
 
 Game::~Game()
 {
+    delete state;
+    
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     
