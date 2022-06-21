@@ -22,8 +22,12 @@ Sprite::Sprite(const char* file, SDL_Renderer* renderer)
 Sprite::~Sprite()
 {
     if (texture != nullptr)
+    {
         SDL_DestroyTexture(texture);
-    cout << "Texture destroyed successfully!" << endl;
+        cout << "Texture destroyed successfully!" << endl;
+    }
+    else
+        cout << "No texture to destroy!" << endl;
 }
 
 void Sprite::Open(const char* file)
