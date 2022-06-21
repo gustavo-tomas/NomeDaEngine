@@ -11,7 +11,7 @@ using namespace std;
 class Music {
     public:
         Music();
-        ~Music();
+        ~Music(); // @TODO: fix this
         Music(const char* file);
         void Play(int times = -1);
         void Stop(int msToStop = 1500);
