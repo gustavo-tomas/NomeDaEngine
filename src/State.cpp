@@ -1,25 +1,10 @@
 #include "State.h"
+#include "Game.h"
 
-State::State()
+State::State(): bg("./assets/image/ocean.jpg"), music("./assets/audio/stageState.ogg")
 {
     quitRequested = false;
-    bg = Sprite("path_to_file", renderer); // @TODO: define a sprite
-    cout << "State created successfully!" << endl;
-}
-
-// @TODO: fix this
-State::State(SDL_Renderer* renderer)
-{
-    this->renderer = renderer;
-    quitRequested = false;
-    bg = Sprite("./assets/image/ocean.jpg", renderer); // @TODO: fix this
-    music = new Music("./assets/audio/stageState.ogg"); // @TODO: fix this
-    // music1 = Music("./assets/audio/stageState.ogg");
-    // music = new Music("./assets/audio/choochoo.wav"); // @TODO: debug
-    
-    (*music).Play(1);
-    // music1.Play(1);
-
+    music.Play(1);
     cout << "State created successfully!" << endl;
 }
 
@@ -33,13 +18,13 @@ void State::Update(float dt)
     if (SDL_QuitRequested() == true)
     {
         quitRequested = true;
-        cout << "Quit requested!" << endl;
+        cout << "Quit requested!\n" << endl;
     }
 }
 
 void State::Render()
 {
-    bg.Render(0, 0); // @TODO: fix this
+    bg.Render(0, 0);
 }
 
 bool State::QuitRequested()

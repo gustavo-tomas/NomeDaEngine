@@ -1,4 +1,5 @@
 #include "Sprite.h"
+#include "Game.h"
 
 Sprite::Sprite()
 {
@@ -7,14 +8,6 @@ Sprite::Sprite()
 
 Sprite::Sprite(const char* file)
 {
-    texture = nullptr;
-    Open(file);
-}
-
-// @TODO: fix this
-Sprite::Sprite(const char* file, SDL_Renderer* renderer)
-{
-    this->renderer = renderer;
     texture = nullptr;
     Open(file);
 }
@@ -33,9 +26,12 @@ Sprite::~Sprite()
 void Sprite::Open(const char* file)
 {
     if (texture != nullptr)
+    {
         SDL_DestroyTexture(texture);
+        cout << "Previous texture destroyed successfully!" << endl;
+    }
 
-    if ((texture = IMG_LoadTexture(renderer, file)) == nullptr)
+    if ((texture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file)) == nullptr)
     {
         cout << "Error loading texture " << file << endl;
         cout << SDL_GetError() << endl;
@@ -45,8 +41,7 @@ void Sprite::Open(const char* file)
         cout << "Texture " << file << " loaded successfully!" << endl;
 
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
-    SetClip(0, 0, width, height); // @TODO: hardcoded x, y
-    Render(0, 0);                 // @TODO: hardcoded x, y
+    SetClip(0, 0, width, height);
 }
 
 void Sprite::SetClip(int x, int y, int width, int height)
@@ -65,7 +60,12 @@ void Sprite::Render(int x, int y)
     dstRect.w = clipRect.w;
     dstRect.h = clipRect.h;
 
-    SDL_RenderCopy(renderer, texture, &clipRect, &dstRect);
+    if (texture == nullptr || SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect) < 0)
+    {
+        cout << "Error rendering copy" << endl;
+        cout << SDL_GetError() << endl;
+        exit(1);
+    }
 }
 
 int Sprite::GetWidth()
