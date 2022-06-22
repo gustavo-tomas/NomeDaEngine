@@ -13,8 +13,7 @@ Music::Music(const char* file)
 
 void Music::Play(int times)
 {
-    // @TODO: handle errors
-    if (Mix_PlayMusic(music, times) < 0) // @TODO: FIX THIS
+    if (Mix_PlayMusic(music, times) < 0)
     {
         cout << "Error playing music" << endl;
         cout << SDL_GetError() << endl;

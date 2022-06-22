@@ -92,7 +92,7 @@ Game::Game(const char* title, int width, int height)
         cout << "Renderer created successfully!" << endl;
 
     // Creates state
-    state = new State(renderer); // @TODO: fix this
+    state = new State();
 }
 
 Game& Game::GetInstance()
@@ -118,14 +118,13 @@ void Game::Run()
     cout << endl << "Engine running!" << endl;
     while (state->QuitRequested() == false)
     {
-        // @TODO: define dt in Update(dt)
         state->Update(0);
         state->Render();
 
         SDL_RenderPresent(renderer);
         SDL_Delay(33); // 30 FPS
     }
-    this->~Game();
+    delete this;
 }
 
 Game::~Game()
@@ -140,5 +139,5 @@ Game::~Game()
     IMG_Quit();
     SDL_Quit();
 
-    cout << "Instance deleted successfully!" << endl;
+    cout << "Game deleted successfully!" << endl;
 }

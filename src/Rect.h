@@ -1,0 +1,8 @@
+class Rect {
+    public:
+        Rect(float x = 0, float y = 0, float w = 0, float h = 0);
+        float x;
+        float y;
+        float w;
+        float h;
+};
