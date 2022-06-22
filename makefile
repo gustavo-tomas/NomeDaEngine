@@ -7,7 +7,7 @@ TARGET=Run
 CC=g++
 
 # Compiler flags
-CC_FLAGS=-std=c++11		\
+CC_FLAGS=-std=c++11     \
          -lSDL2     	\
          -lSDL2_image	\
          -lSDL2_ttf   	\
