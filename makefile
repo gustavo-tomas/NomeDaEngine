@@ -20,9 +20,7 @@ CPP_SRC=src/Main.cpp    \
         src/Game.cpp    \
         src/State.cpp   \
         src/Sprite.cpp  \
-        src/Music.cpp   \
-        src/Vec2.cpp    \
-        src/Rect.cpp
+        src/Music.cpp
 
 run:
 	$(CC) $(CPP_SRC) $(CC_FLAGS) -o $(TARGET)
