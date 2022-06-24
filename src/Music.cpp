@@ -1,4 +1,4 @@
-#include "Music.h"
+#include "../header/Music.h"
 
 Music::Music()
 {
@@ -49,7 +49,7 @@ bool Music::IsOpen()
 
 Music::~Music()
 {
-    Stop();
+    Stop(0);
     Mix_FreeMusic(music);
     cout << "Music freed successfully!" << endl;
 }

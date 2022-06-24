@@ -1,14 +1,13 @@
-#include "Sprite.h"
-#include "Game.h"
+#include "../header/Sprite.h"
+#include "../header/Game.h"
 
-Sprite::Sprite()
+Sprite::Sprite(GameObject& associated) : Component(associated)
 {
     texture = nullptr;
 }
 
-Sprite::Sprite(const char* file)
+Sprite::Sprite(GameObject& associated, const char* file) : Sprite(associated)
 {
-    texture = nullptr;
     Open(file);
 }
 
@@ -42,6 +41,10 @@ void Sprite::Open(const char* file)
 
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
     SetClip(0, 0, width, height);
+
+    // @TODO: check if correct
+    associated.box.w = width;
+    associated.box.h = height;
 }
 
 void Sprite::SetClip(int x, int y, int width, int height)
@@ -52,11 +55,16 @@ void Sprite::SetClip(int x, int y, int width, int height)
     clipRect.h = height;
 }
 
-void Sprite::Render(int x, int y)
+void Sprite::Update(float dt)
+{
+
+}
+
+void Sprite::Render()
 {
     SDL_Rect dstRect;
-    dstRect.x = x;
-    dstRect.y = y;
+    dstRect.x = associated.box.x;
+    dstRect.y = associated.box.y;
     dstRect.w = clipRect.w;
     dstRect.h = clipRect.h;
 
@@ -66,6 +74,12 @@ void Sprite::Render(int x, int y)
         cout << SDL_GetError() << endl;
         exit(1);
     }
+}
+
+bool Sprite::Is(const char* type)
+{
+    string str_type = type;
+    return (str_type == "Sprite");
 }
 
 int Sprite::GetWidth()

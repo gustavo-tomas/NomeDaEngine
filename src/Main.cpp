@@ -1,7 +1,4 @@
-#include "Game.h"
-
-// #include "Vec2.h"
-// #include "Rect.h"
+#include "../header/Game.h"
 
 int main(int argc, char** argv)
 {

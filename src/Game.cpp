@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "../header/Game.h"
 
 const int WIDTH = 1024;
 const int HEIGHT = 600;
@@ -90,6 +90,9 @@ Game::Game(const char* title, int width, int height)
     }
     else
         cout << "Renderer created successfully!" << endl;
+
+    // Seeds RNG
+    srand(time(NULL));
 
     // Creates state
     state = new State();
