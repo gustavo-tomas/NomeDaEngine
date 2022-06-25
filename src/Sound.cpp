@@ -12,7 +12,7 @@ Sound::Sound(GameObject& associated, const char* file) : Sound(associated)
 
 void Sound::Play(int times)
 {
-    channel = Mix_PlayChannel(-1, chunk, times);
+    channel = Mix_PlayChannel(-1, chunk, times - 1);
 }
 
 void Sound::Stop()
