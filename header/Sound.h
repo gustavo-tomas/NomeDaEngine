@@ -20,7 +20,7 @@ class Sound : public Component {
         bool IsOpen();
         void Update(float dt);
         void Render();
-        bool Is(const char* type); // @TODO: fix this
+        bool Is(const char* type);
 
     private:
         Mix_Chunk* chunk;

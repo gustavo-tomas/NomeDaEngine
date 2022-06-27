@@ -12,7 +12,7 @@ class Rect {
         float y;
         float w;
         float h;
-        bool Contains(vector<float> point); // @TODO: might need to change later
+        bool Contains(vector<float> point);
 };
 
 
