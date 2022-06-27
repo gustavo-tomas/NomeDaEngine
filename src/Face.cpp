@@ -10,14 +10,18 @@ void Face::Damage(int damage)
 {
     if ((hitpoints -= damage) <= 0)
     {
-        cout << "\nEnemy killed!" << endl;
+        cout << "Enemy killed!\n" << endl;
         Sound* sound = (Sound *) associated.GetComponent("Sound");
+
+        // O som e tocado mas o objeto e deletado logo apos, entao
+        // parece que o som nao toca. So um detalhe da implementacao
+        // do Trab2
         if (sound != nullptr)
         {
-            sound->Play(); // @TODO: fix this
+            sound->Play();
             cout << "Playing sound!" << endl;
         }
-        associated.RequestDelete();
+        associated.RequestDelete(); // Comente essa linha para ouvir o som de morte
     }
     else
         cout << "HP is " << hitpoints << endl;

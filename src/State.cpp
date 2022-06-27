@@ -7,11 +7,11 @@
 State::State() :
     music("./assets/audio/stageState.ogg")
 {
-    GameObject* bgGo = new GameObject(); // @TODO: fix this
-    bg = new Sprite(*bgGo, "./assets/image/ocean.jpg");
+    GameObject* bgGo = new GameObject();
+    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.jpg");
     
     bgGo->AddComponent(bg);
-    objectArray.emplace_back(bgGo); // @TODO: fix this - causing quitting error?
+    objectArray.emplace_back(bgGo);
 
     AddObject(100, 200);
 
@@ -28,7 +28,6 @@ void State::LoadAssets()
 void State::Update(float dt)
 {
     Input();
-    // cout << "OBJ ARRAY SIZE: " << objectArray.size() << endl; // @TODO: comment
 
     for (long unsigned int i = 0; i < objectArray.size(); i++)
     {
@@ -44,14 +43,13 @@ void State::Render()
         object->Render();
 }
 
-// @TODO: finish
 void State::AddObject(int mouseX, int mouseY)
 {
-    GameObject* go = new GameObject(); // @TODO: fix this
+    GameObject* go = new GameObject();
     go->box.x = mouseX;
     go->box.y = mouseY;
 
-    Sprite* sprite = new Sprite(*go, "./assets/image/penguinface.png"); // @TODO: fix this
+    Sprite* sprite = new Sprite(*go, "./assets/image/penguinface.png");
     go->AddComponent(sprite);
 
     Sound* sound = new Sound(*go, "./assets/audio/boom.wav");

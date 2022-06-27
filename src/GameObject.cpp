@@ -49,7 +49,6 @@ void GameObject::RemoveComponent(Component* cpt)
     );
 }
 
-// @TODO: fix this get????
 Component* GameObject::GetComponent(const char* type)
 {
     for (auto& cpt : components)

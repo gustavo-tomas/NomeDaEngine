@@ -21,7 +21,6 @@ class State {
     private:
         void Input();
         void AddObject(int mouseX, int mouseY);
-        Sprite* bg; // @TODO: fix this
         Music music;
         bool quitRequested;
         vector<unique_ptr<GameObject>> objectArray;

@@ -33,11 +33,6 @@ void Sound::Open(const char* file)
         cout << "Sound " << file << " loaded successfully!" << endl;
 }
 
-bool Sound::IsOpen()
-{
-
-}
-
 Sound::~Sound()
 {
     if (chunk != nullptr)
