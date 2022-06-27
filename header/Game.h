@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define INCLUDE_SDL
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
 

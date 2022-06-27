@@ -34,3 +34,6 @@ Run
 
 # IDE
 .vscode
+
+# Folders
+build

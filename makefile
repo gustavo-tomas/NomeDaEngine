@@ -1,29 +1,29 @@
-# makefile ta feio kkkkkkkk um dia eu conserto
+CXX=g++
 
-# Name of the project
-TARGET=Run
+CFLAGS=-std=c++11 -Wall -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
-# Compiler
-CC=g++
+TARGET ?= Run
 
-# Compiler flags
-CC_FLAGS=-std=c++11		\
-         -lSDL2     	\
-         -lSDL2_image	\
-         -lSDL2_ttf   	\
-         -lSDL2_mixer
+BUILD_DIR ?= build
+SRC_DIRS ?= src
 
-# Command used at clean target
-RM = rm
+SRCS := $(shell find $(SRC_DIRS) -name *.cpp)
+OBJS := $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
-CPP_SRC=src/Main.cpp    \
-        src/Game.cpp    \
-        src/State.cpp   \
-        src/Sprite.cpp  \
-        src/Music.cpp
+INC_DIRS := header
+INC_FLAGS := $(addprefix -I , $(INC_DIRS))
 
-run:
-	$(CC) $(CPP_SRC) $(CC_FLAGS) -o $(TARGET)
+$(TARGET): $(OBJS)
+	$(CXX) $(OBJS) $(CFLAGS) -o $@
+	@echo "\n\nNomeDaEngine compiled successfully."
+	@echo "Run with ./Run"
 
+$(BUILD_DIR)/%.o: %.cpp
+	$(MKDIR_P) $(dir $@)
+	$(CXX) $(CFLAGS) $(INC_FLAGS) -c $< -o $@
+
+.PHONY: clean
 clean:
-	$(RM) $(TARGET)
+	$(RM) -r $(BUILD_DIR) $(TARGET)
+
+MKDIR_P ?= mkdir -p
