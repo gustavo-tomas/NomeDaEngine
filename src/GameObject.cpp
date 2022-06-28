@@ -36,7 +36,6 @@ void GameObject::RequestDelete()
 void GameObject::AddComponent(Component* cpt)
 {
     components.emplace_back(cpt);
-    cout << "Component added! -> " << components.size() << endl;
 }
 
 void GameObject::RemoveComponent(Component* cpt)

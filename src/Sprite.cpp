@@ -1,5 +1,6 @@
 #include "../header/Sprite.h"
 #include "../header/Game.h"
+#include "../header/Resources.h"
 
 Sprite::Sprite(GameObject& associated) : Component(associated)
 {
@@ -13,31 +14,12 @@ Sprite::Sprite(GameObject& associated, const char* file) : Sprite(associated)
 
 Sprite::~Sprite()
 {
-    if (texture != nullptr)
-    {
-        SDL_DestroyTexture(texture);
-        cout << "Texture destroyed successfully!" << endl;
-    }
-    else
-        cout << "No texture to destroy!" << endl;
+    
 }
 
 void Sprite::Open(const char* file)
 {
-    if (texture != nullptr)
-    {
-        SDL_DestroyTexture(texture);
-        cout << "Previous texture destroyed successfully!" << endl;
-    }
-
-    if ((texture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file)) == nullptr)
-    {
-        cout << "Error loading texture " << file << endl;
-        cout << SDL_GetError() << endl;
-        exit(1);
-    }
-    else
-        cout << "Texture " << file << " loaded successfully!" << endl;
+    texture = Resources::GetImage(file);
 
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
     SetClip(0, 0, width, height);
@@ -61,9 +43,14 @@ void Sprite::Update(float dt)
 
 void Sprite::Render()
 {
+    Render(associated.box.x, associated.box.y);
+}
+
+void Sprite::Render(int x, int y)
+{
     SDL_Rect dstRect;
-    dstRect.x = associated.box.x;
-    dstRect.y = associated.box.y;
+    dstRect.x = x;
+    dstRect.y = y;
     dstRect.w = clipRect.w;
     dstRect.h = clipRect.h;
 

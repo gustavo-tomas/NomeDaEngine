@@ -19,6 +19,7 @@ class Sprite : public Component {
         void Update(float dt);
         bool Is(const char* type);
         void Render();
+        void Render(int x, int y);
         int GetWidth();
         int GetHeight();
         bool IsOpen();

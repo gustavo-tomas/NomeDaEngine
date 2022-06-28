@@ -7,6 +7,7 @@
 
 #include "SDL_include.h"
 #include "State.h"
+#include "Resources.h"
 #include <string>
 #include <iostream>
 

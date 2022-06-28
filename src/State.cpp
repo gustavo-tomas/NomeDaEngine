@@ -3,21 +3,28 @@
 #include "../header/Sound.h"
 #include "../header/Face.h"
 #include "../header/Vec2.h"
+#include "../header/TileSet.h"
+#include "../header/TileMap.h"
 
 State::State() :
     music("./assets/audio/stageState.ogg")
 {
-    GameObject* bgGo = new GameObject();
-    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.jpg");
+    // Tileset & Tilemap
+    GameObject* tileGo = new GameObject();
+    TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png"); // @TODO: delete tileset when finished
+    TileMap* tileMap = new TileMap(*tileGo, "./assets/map/tileMap.txt", tileSet);
     
-    bgGo->AddComponent(bg);
-    objectArray.emplace_back(bgGo);
+    tileGo->box.x = 0;
+    tileGo->box.y = 0;
+
+    tileGo->AddComponent(tileMap);
+    objectArray.emplace_back(tileGo);
 
     AddObject(100, 200);
 
     quitRequested = false;
     music.Play(1);
-    cout << "State created successfully!" << endl;
+    cout << "\nState created successfully!\n" << endl;
 }
 
 void State::LoadAssets()
