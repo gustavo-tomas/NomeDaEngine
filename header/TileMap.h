@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "TileSet.h"
+#include <fstream>
 
 class TileMap : public Component {
     public:
@@ -11,6 +12,8 @@ class TileMap : public Component {
         void Load(const char* file);
         void SetTileSet(TileSet* tileSet);
         int& At(int x, int y, int z = 0);
+        void Update(float dt);
+        bool Is(const char* type);
         void Render();
         void RenderLayer(int layer, int cameraX = 0, int cameraY = 0);
         int GetWidth();

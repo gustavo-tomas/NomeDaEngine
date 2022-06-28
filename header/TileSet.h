@@ -12,7 +12,7 @@ class TileSet {
         int GetTileHeight();
 
     private:
-        Sprite* tileSet; // @TODO: fix this
+        Sprite* tileSet;
         int rows;
         int columns;
         int tileWidth;
