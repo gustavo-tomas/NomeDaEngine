@@ -33,6 +33,11 @@ void Sound::Open(const char* file)
         cout << "Sound " << file << " loaded successfully!" << endl;
 }
 
+bool Sound::IsOpen()
+{
+    return Mix_Playing(channel);
+}
+
 Sound::~Sound()
 {
     if (chunk != nullptr)
