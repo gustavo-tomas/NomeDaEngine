@@ -1,4 +1,5 @@
 #include "../header/Music.h"
+#include "../header/Resources.h"
 
 Music::Music()
 {
@@ -17,10 +18,7 @@ void Music::Play(int times)
     {
         cout << "Error playing music" << endl;
         cout << SDL_GetError() << endl;
-        exit(1);
     }
-    else
-        cout << "Music played successfully!" << endl;
 }
 
 void Music::Stop(int msToStop)
@@ -30,14 +28,7 @@ void Music::Stop(int msToStop)
 
 void Music::Open(const char* file)
 {
-    if ((music = Mix_LoadMUS(file)) == nullptr)
-    {
-        cout << "Error loading music " << file << endl;
-        cout << SDL_GetError() << endl;
-        exit(1);
-    }
-    else
-        cout << "Music " << file << " loaded successfully!" << endl;
+    music = Resources::GetMusic(file);
 }
 
 bool Music::IsOpen()
@@ -50,6 +41,4 @@ bool Music::IsOpen()
 Music::~Music()
 {
     Stop(0);
-    Mix_FreeMusic(music);
-    cout << "Music freed successfully!" << endl;
 }

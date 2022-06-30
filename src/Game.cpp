@@ -14,10 +14,7 @@ Game::Game(const char* title, int width, int height)
         exit(1);
     }
     else
-    {
         instance = this;
-        cout << "First and only instance created successfully!" << endl;
-    }
 
     // Initializes SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER))
@@ -26,8 +23,6 @@ Game::Game(const char* title, int width, int height)
         cout << SDL_GetError() << endl;
         exit(1);
     }
-    else
-        cout << "SDL initialized successfully!" << endl;
 
     // Initializes SDL_Image
     if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) == 0)
@@ -36,8 +31,6 @@ Game::Game(const char* title, int width, int height)
         cout << SDL_GetError() << endl;
         exit(1);
     }
-    else
-        cout << "IMG initialized successfully!" << endl;
 
     // Initializes SDL_Mixer
     if (Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG) == 0)
@@ -46,8 +39,6 @@ Game::Game(const char* title, int width, int height)
         cout << SDL_GetError() << endl;
         exit(1);
     }
-    else
-        cout << "MIX initialized successfully!" << endl;
 
     // Initializes OpenAudio
     if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) != 0)
@@ -56,8 +47,6 @@ Game::Game(const char* title, int width, int height)
         cout << SDL_GetError() << endl;
         exit(1);
     }
-    else
-        cout << "OpenAudio initialized successfully!" << endl;
 
     // Allocates audio channels
     Mix_AllocateChannels(32);
@@ -75,8 +64,6 @@ Game::Game(const char* title, int width, int height)
         cout << SDL_GetError() << endl;
         exit(1);
     }
-    else
-        cout << "Window created successfully!" << endl;
 
     // Creates renderer
     if ((renderer = SDL_CreateRenderer(
@@ -88,8 +75,6 @@ Game::Game(const char* title, int width, int height)
         cout << SDL_GetError() << endl;
         exit(1);
     }
-    else
-        cout << "Renderer created successfully!" << endl;
 
     // Seeds RNG
     srand(time(NULL));
@@ -118,7 +103,7 @@ SDL_Renderer* Game::GetRenderer()
 
 void Game::Run()
 {
-    cout << endl << "Engine running!" << endl;
+    // Run the engine
     while (state->QuitRequested() == false)
     {
         state->Update(0);
@@ -127,6 +112,12 @@ void Game::Run()
         SDL_RenderPresent(renderer);
         SDL_Delay(33); // 30 FPS
     }
+
+    // Free resources 
+    Resources::ClearImages();
+    Resources::ClearMusics();
+    Resources::ClearSounds();
+    
     delete this;
 }
 
@@ -142,5 +133,5 @@ Game::~Game()
     IMG_Quit();
     SDL_Quit();
 
-    cout << "Game deleted successfully!" << endl;
+    cout << "\n\nGame deleted successfully!" << endl;
 }

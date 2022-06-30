@@ -10,26 +10,25 @@ void Face::Damage(int damage)
 {
     if ((hitpoints -= damage) <= 0)
     {
-        cout << "Enemy killed!\n" << endl;
         Sound* sound = (Sound *) associated.GetComponent("Sound");
 
-        // O som e tocado mas o objeto e deletado logo apos, entao
-        // parece que o som nao toca. So um detalhe da implementacao
-        // do Trab2
         if (sound != nullptr)
-        {
             sound->Play();
-            cout << "Playing sound!" << endl;
-        }
-        associated.RequestDelete(); // Comente essa linha para ouvir o som de morte
     }
-    else
-        cout << "HP is " << hitpoints << endl;
+    cout << "HP is " << hitpoints << endl;
 }
 
+// Como face e uma classe temporaria, o request delete foi
+// movido de damage para update para melhorar o funcionamento do jogo.
 void Face::Update(float dt)
 {
+    if (hitpoints <= 0)
+    {
+        Sound* sound = (Sound *) associated.GetComponent("Sound");
 
+        if (sound == nullptr || (sound != nullptr && !sound->IsOpen()))
+            associated.RequestDelete();
+    }
 }
 
 void Face::Render()

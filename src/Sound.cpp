@@ -1,4 +1,5 @@
 #include "../header/Sound.h"
+#include "../header/Resources.h"
 
 Sound::Sound(GameObject& associated) : Component(associated)
 {
@@ -23,26 +24,17 @@ void Sound::Stop()
 
 void Sound::Open(const char* file)
 {
-    if ((chunk = Mix_LoadWAV(file)) == nullptr)
-    {
-        cout << "Error loading sound" << endl;
-        cout << SDL_GetError() << endl;
-        exit(1);
-    }
-    else
-        cout << "Sound " << file << " loaded successfully!" << endl;
+    chunk = Resources::GetSound(file);
 }
 
 Sound::~Sound()
 {
-    if (chunk != nullptr)
-    {
-        Mix_HaltChannel(channel);
-        Mix_FreeChunk(chunk);
-        cout << "Sound deleted successfully!" << endl;
-    }
-    else
-        cout << "Sound chunk is already null!" << endl;
+    Stop();
+}
+
+bool Sound::IsOpen()
+{
+    return Mix_Playing(channel);
 }
 
 void Sound::Update(float dt)
