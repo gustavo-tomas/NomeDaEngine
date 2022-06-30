@@ -21,8 +21,7 @@ SDL_Texture* Resources::GetImage(const char* file)
 
     else
     {
-        imageTable.insert(make_pair(file, texture));
-        // imageTable[file] = texture; // @TODO: possible solution?
+        imageTable[file] = texture;
         cout << "\nTexture " << file << " loaded successfully!" << endl;
         return imageTable[file];
     }
@@ -44,7 +43,7 @@ Mix_Music* Resources::GetMusic(const char* file)
 
     else
     {
-        musicTable.insert(make_pair(file, music));
+        musicTable[file] = music;
         cout << "\nMusic " << file << " loaded successfully!" << endl;
         return musicTable[file];
     }
@@ -66,7 +65,7 @@ Mix_Chunk* Resources::GetSound(const char* file)
 
     else
     {
-        soundTable.insert(make_pair(file, chunk));
+        soundTable[file] = chunk;
         cout << "\nSound " << file << " loaded successfully!" << endl;
         return soundTable[file];
     }

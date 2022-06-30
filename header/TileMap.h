@@ -16,6 +16,7 @@ class TileMap : public Component {
         bool Is(const char* type);
         void Render();
         void RenderLayer(int layer, int cameraX = 0, int cameraY = 0);
+        ~TileMap();
         int GetWidth();
         int GetHeight();
         int GetDepth();

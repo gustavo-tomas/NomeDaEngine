@@ -11,7 +11,7 @@ State::State() :
 {
     // Tileset & Tilemap
     GameObject* tileGo = new GameObject();
-    TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png"); // @TODO: delete tileset when finished
+    TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png");
     TileMap* tileMap = new TileMap(*tileGo, "./assets/map/tileMap.txt", tileSet);
     
     tileGo->box.x = 0;

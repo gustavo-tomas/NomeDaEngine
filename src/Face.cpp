@@ -18,7 +18,7 @@ void Face::Damage(int damage)
     cout << "HP is " << hitpoints << endl;
 }
 
-// @TODO: como face e uma classe temporaria, o request delete foi
+// Como face e uma classe temporaria, o request delete foi
 // movido de damage para update para melhorar o funcionamento do jogo.
 void Face::Update(float dt)
 {

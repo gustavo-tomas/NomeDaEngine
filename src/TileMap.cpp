@@ -64,13 +64,11 @@ void TileMap::SetTileSet(TileSet* tileSet)
 
 int& TileMap::At(int x, int y, int z)
 {
-    // @TODO: check
     // Index = (W * H * Z) + (W * Y) + X
     unsigned index = x + (mapWidth * y) + (mapWidth * mapHeight * z);
     return tileMatrix[index];
 }
 
-// @TODO: check
 void TileMap::RenderLayer(int layer, int cameraX, int cameraY)
 {
     unsigned startPos = mapWidth * mapHeight * layer;
@@ -91,8 +89,6 @@ void TileMap::RenderLayer(int layer, int cameraX, int cameraY)
     }
 }
 
-// @TODO: why use the box?
-// RenderLayer(i, associated.box.x, associated.box.y);
 void TileMap::Render()
 {
     for (auto i = 0; i < mapDepth; i++)
@@ -108,6 +104,13 @@ bool TileMap::Is(const char* type)
 {
     string str_type = type;
     return (str_type == "TileMap");
+}
+
+// @TODO: needs to be changed when using multiple tilemaps for the same tileset!
+TileMap::~TileMap()
+{
+    delete tileSet;
+    cout << "TileSet deleted successfully!" << endl;
 }
 
 int TileMap::GetWidth()
