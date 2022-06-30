@@ -1,4 +1,5 @@
 #include "../header/Game.h"
+#include "../header/InputManager.h"
 
 const int WIDTH = 1024;
 const int HEIGHT = 600;
@@ -106,6 +107,7 @@ void Game::Run()
     // Run the engine
     while (state->QuitRequested() == false)
     {
+        InputManager::GetInstance().Update();
         state->Update(0);
         state->Render();
 
