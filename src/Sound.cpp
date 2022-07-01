@@ -29,7 +29,7 @@ void Sound::Open(const char* file)
 
 Sound::~Sound()
 {
-    Stop();
+
 }
 
 bool Sound::IsOpen()
