@@ -42,7 +42,8 @@ Sound::~Sound()
 {
     if (chunk != nullptr)
     {
-        Mix_HaltChannel(channel);
+        if (channel >= -1)
+            Mix_HaltChannel(channel);
         Mix_FreeChunk(chunk);
         cout << "Sound deleted successfully!" << endl;
     }
