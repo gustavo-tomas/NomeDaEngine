@@ -9,6 +9,13 @@
 State::State() :
     music("./assets/audio/stageState.ogg")
 {
+    // Background
+    GameObject* bgGo = new GameObject();
+    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.jpg");
+ 
+    bgGo->AddComponent(bg);
+    objectArray.emplace_back(bgGo);
+
     // Tileset & Tilemap
     GameObject* tileGo = new GameObject();
     TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png");
