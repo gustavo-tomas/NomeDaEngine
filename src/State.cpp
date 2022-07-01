@@ -6,10 +6,21 @@
 #include "../header/TileSet.h"
 #include "../header/TileMap.h"
 #include "../header/InputManager.h"
+#include "../header/Camera.h"
+#include "../header/CameraFollower.h"
 
 State::State() :
     music("./assets/audio/stageState.ogg")
 {
+    // Background
+    GameObject* bgGo = new GameObject();
+    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.png"); // @TODO: fix t3
+    // CameraFollower* cf = new CameraFollower(*bgGo);
+
+    bgGo->AddComponent(bg);
+    // bgGo->AddComponent(cf); // @TODO: fix this
+    objectArray.emplace_back(bgGo);
+
     // Tileset & Tilemap
     GameObject* tileGo = new GameObject();
     TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png");
@@ -20,8 +31,6 @@ State::State() :
 
     tileGo->AddComponent(tileMap);
     objectArray.emplace_back(tileGo);
-
-    AddObject(100, 200);
 
     quitRequested = false;
     music.Play(1);
@@ -35,6 +44,9 @@ void State::LoadAssets()
 
 void State::Update(float dt)
 {
+    // Updates the camera
+    Camera::GetInstance().Update(dt);
+
     // Set quit requested
     if (InputManager::GetInstance().KeyPress(ESCAPE_KEY) ||
         InputManager::GetInstance().QuitRequested())

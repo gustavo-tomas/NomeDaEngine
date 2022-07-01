@@ -1,10 +1,12 @@
 #include "../header/Face.h"
 #include "../header/Sound.h"
 #include "../header/InputManager.h"
+#include "../header/Camera.h"
 
 Face::Face(GameObject& associated) : Component(associated)
 {
     hitpoints = 30;
+    initialPos = Vec2(associated.box.x, associated.box.y); // @TODO: fix this
 }
 
 void Face::Damage(int damage)
@@ -42,7 +44,8 @@ void Face::Update(float dt)
 
 void Face::Render()
 {
-    
+    associated.box.x = Camera::GetInstance().pos.x + initialPos.x; // @TODO: fix this
+    associated.box.y = Camera::GetInstance().pos.y + initialPos.y;
 }
 
 bool Face::Is(const char* type)
