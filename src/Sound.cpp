@@ -18,7 +18,7 @@ void Sound::Play(int times)
 
 void Sound::Stop()
 {
-    if (chunk != nullptr)
+    if (chunk != nullptr && channel >= -1)
         Mix_HaltChannel(channel);
 }
 
@@ -29,7 +29,7 @@ void Sound::Open(const char* file)
 
 Sound::~Sound()
 {
-
+    Stop();
 }
 
 bool Sound::IsOpen()
