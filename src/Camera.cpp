@@ -25,25 +25,50 @@ void Camera::Update(float dt)
 {
     if (focus != nullptr)
     {
-        // center of the screen
+        // @TODO: finish
+        // pos = Vec2(
+        //     focus->box.x - 512 + focus->box.w / 2,
+        //     focus->box.y - 300 + focus->box.h / 2
+        // );
     }
 
     else
     {
-        int dX = 64, dY = 64;
-        // @TODO: update position and speed
-        if (InputManager::GetInstance().KeyPress(LEFT_ARROW_KEY))
-            pos = pos + Vec2(dX, 0);
+        // X = Xo + vo * dt + (a * dt^2) / 2
+        pos.x = pos.x + speed.x * dt;
+        pos.y = pos.y + speed.y * dt;
+        
+        float maxSpeed = 250.0;
+        float incSpeed = 30.0;
+        float decSpeed = 10.0;
 
-        if (InputManager::GetInstance().KeyPress(RIGHT_ARROW_KEY))
-            pos = pos - Vec2(dX, 0);
+        if (InputManager::GetInstance().IsKeyDown(LEFT_ARROW_KEY))
+            speed.x = speed.x < maxSpeed ? speed.x + incSpeed : maxSpeed;
 
-        if (InputManager::GetInstance().KeyPress(UP_ARROW_KEY))
-            pos = pos + Vec2(0, dY);
+        if (InputManager::GetInstance().IsKeyDown(RIGHT_ARROW_KEY))
+            speed.x = speed.x > -maxSpeed ? speed.x - incSpeed : -maxSpeed;
 
-        if (InputManager::GetInstance().KeyPress(DOWN_ARROW_KEY))
-            pos = pos - Vec2(0, dY);
+        if (!InputManager::GetInstance().IsKeyDown(LEFT_ARROW_KEY) &&
+            !InputManager::GetInstance().IsKeyDown(RIGHT_ARROW_KEY))
+        {
+            speed.x = speed.x > 0 ? speed.x - decSpeed : 
+                      speed.x < 0 ? speed.x + decSpeed :
+                      0;
+        }
 
-        cout << "POSX: " << pos.x << " POSY: " << pos.y << endl;
+        if (InputManager::GetInstance().IsKeyDown(UP_ARROW_KEY))
+            speed.y = speed.y < maxSpeed ? speed.y + incSpeed : maxSpeed;
+        
+        if (InputManager::GetInstance().IsKeyDown(DOWN_ARROW_KEY))
+            speed.y = speed.y > -maxSpeed ? speed.y - incSpeed : -maxSpeed;
+
+        if (!InputManager::GetInstance().IsKeyDown(UP_ARROW_KEY) &&
+            !InputManager::GetInstance().IsKeyDown(DOWN_ARROW_KEY))
+        {
+            speed.y = speed.y > 0 ? speed.y - decSpeed : 
+                      speed.y < 0 ? speed.y + decSpeed :
+                      0;
+        }
     }
+    cout << "POSX: " << pos.x << " POSY: " << pos.y << endl;
 }

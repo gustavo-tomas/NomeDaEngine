@@ -14,7 +14,7 @@ State::State() :
 {
     // Background
     GameObject* bgGo = new GameObject();
-    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.png"); // @TODO: fix t3
+    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.png");
     // CameraFollower* cf = new CameraFollower(*bgGo);
 
     bgGo->AddComponent(bg);
@@ -35,6 +35,15 @@ State::State() :
     quitRequested = false;
     music.Play(1);
     cout << "\nState created successfully!\n" << endl;
+
+    // Focus test // @TODO: delete this
+    GameObject* fcGo = new GameObject();
+    Sprite* sv = new Sprite(*fcGo, "./assets/image/sv_64.png");
+    fcGo->box.x = 512 - 64 / 2;
+    fcGo->box.y = 300 - 64 / 2;
+    
+    fcGo->AddComponent(sv);
+    objectArray.emplace_back(fcGo);
 }
 
 void State::LoadAssets()
@@ -56,8 +65,8 @@ void State::Update(float dt)
     if (InputManager::GetInstance().KeyPress(SPACE_KEY))
     {
         Vec2 objPos = Vec2(200, 0).GetRotated(-M_PI + M_PI*(rand() % 1001)/500.0) + Vec2(
-            InputManager::GetInstance().GetMouseX(),
-            InputManager::GetInstance().GetMouseY());
+            InputManager::GetInstance().GetMouseX() - Camera::GetInstance().pos.x,
+            InputManager::GetInstance().GetMouseY() - Camera::GetInstance().pos.y);
         AddObject((int) objPos.x, (int) objPos.y);
     }
 
