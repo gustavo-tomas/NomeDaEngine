@@ -5,10 +5,22 @@
 #include "../header/Vec2.h"
 #include "../header/TileSet.h"
 #include "../header/TileMap.h"
+#include "../header/InputManager.h"
+#include "../header/Camera.h"
+#include "../header/CameraFollower.h"
 
 State::State() :
     music("./assets/audio/stageState.ogg")
 {
+    // Background
+    GameObject* bgGo = new GameObject();
+    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.png");
+    CameraFollower* cf = new CameraFollower(*bgGo);
+
+    bgGo->AddComponent(bg);
+    bgGo->AddComponent(cf);
+    objectArray.emplace_back(bgGo);
+
     // Tileset & Tilemap
     GameObject* tileGo = new GameObject();
     TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png");
@@ -20,11 +32,18 @@ State::State() :
     tileGo->AddComponent(tileMap);
     objectArray.emplace_back(tileGo);
 
-    AddObject(100, 200);
-
     quitRequested = false;
     music.Play(1);
     cout << "\nState created successfully!\n" << endl;
+
+    // Focus test // @TODO: delete this
+    GameObject* fcGo = new GameObject();
+    Sprite* sv = new Sprite(*fcGo, "./assets/image/sv_64.png");
+    fcGo->box.x = 512 - 64 / 2;
+    fcGo->box.y = 300 - 64 / 2;
+    
+    fcGo->AddComponent(sv);
+    objectArray.emplace_back(fcGo);
 }
 
 void State::LoadAssets()
@@ -34,7 +53,22 @@ void State::LoadAssets()
 
 void State::Update(float dt)
 {
-    Input();
+    // Updates the camera
+    Camera::Update(dt);
+
+    // Set quit requested
+    if (InputManager::GetInstance().KeyPress(ESCAPE_KEY) ||
+        InputManager::GetInstance().QuitRequested())
+        quitRequested = true;    
+
+    // Create a face if space is pressed
+    if (InputManager::GetInstance().KeyPress(SPACE_KEY))
+    {
+        Vec2 objPos = Vec2(200, 0).GetRotated(-M_PI + M_PI*(rand() % 1001)/500.0) + Vec2(
+            InputManager::GetInstance().GetMouseX() + Camera::pos.x,
+            InputManager::GetInstance().GetMouseY() + Camera::pos.y);
+        AddObject((int) objPos.x, (int) objPos.y);
+    }
 
     for (long unsigned int i = 0; i < objectArray.size(); i++)
     {
@@ -71,61 +105,6 @@ void State::AddObject(int mouseX, int mouseY)
 bool State::QuitRequested()
 {
     return quitRequested;
-}
-
-void State::Input()
-{
-    SDL_Event event;
-	int mouseX, mouseY;
-
-	// Mouse coordinates
-	SDL_GetMouseState(&mouseX, &mouseY);
-
-	// SDL_PollEvent returns 1 if any event is found, 0 otherwise
-	while (SDL_PollEvent(&event)) {
-
-		// If event is quit
-		if (event.type == SDL_QUIT)
-			quitRequested = true;
-		
-		// If event is a mouse click
-		if (event.type == SDL_MOUSEBUTTONDOWN) {
-
-			// Get the object on top
-			for (int i = objectArray.size() - 1; i >= 0; i--)
-            {
-				// Get pointer and casts to Face. (DONT USE GET)
-				GameObject* go = (GameObject*) objectArray[i].get();
-				
-				if(go->box.Contains({ (float) mouseX, (float) mouseY }))
-                {
-					Face* face = (Face*) go->GetComponent("Face");
-                    if (nullptr != face)
-                    {
-						// Deals massive damage
-						face->Damage(rand() % 10 + 10);
-						// Hits only one target
-						break;
-					}
-				}
-			}
-		}
-
-        // If event type is a key
-		if (event.type == SDL_KEYDOWN)
-        {
-			// If key is "ESC", quits
-			if(event.key.keysym.sym == SDLK_ESCAPE)
-				quitRequested = true;
-
-			// Else creates objects
-			else
-            {
-				Vec2 objPos = Vec2(200, 0).GetRotated(-M_PI + M_PI*(rand() % 1001)/500.0) + Vec2(mouseX, mouseY);
-				AddObject((int) objPos.x, (int) objPos.y);
-			}
-		}
-	}
 }
 
 State::~State()

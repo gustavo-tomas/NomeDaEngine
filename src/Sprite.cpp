@@ -1,6 +1,7 @@
 #include "../header/Sprite.h"
 #include "../header/Game.h"
 #include "../header/Resources.h"
+#include "../header/Camera.h"
 
 Sprite::Sprite(GameObject& associated) : Component(associated)
 {
@@ -43,7 +44,7 @@ void Sprite::Update(float dt)
 
 void Sprite::Render()
 {
-    Render(associated.box.x, associated.box.y);
+    Render(associated.box.x - Camera::pos.x, associated.box.y - Camera::pos.y);
 }
 
 void Sprite::Render(int x, int y)

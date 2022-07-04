@@ -1,4 +1,5 @@
 #include "../header/Game.h"
+#include "../header/InputManager.h"
 
 const int WIDTH = 1024;
 const int HEIGHT = 600;
@@ -76,11 +77,26 @@ Game::Game(const char* title, int width, int height)
         exit(1);
     }
 
+    // Initializes dt and frameStart
+    frameStart = SDL_GetTicks();
+    dt = 0;
+
     // Seeds RNG
     srand(time(NULL));
 
     // Creates state
     state = new State();
+}
+
+void Game::CalculateDeltaTime()
+{
+    dt = (SDL_GetTicks() - frameStart) / 1000.0;
+    frameStart = SDL_GetTicks();
+}
+
+float Game::GetDeltaTime()
+{
+    return dt;
 }
 
 Game& Game::GetInstance()
@@ -106,7 +122,9 @@ void Game::Run()
     // Run the engine
     while (state->QuitRequested() == false)
     {
-        state->Update(0);
+        CalculateDeltaTime();
+        InputManager::GetInstance().Update();
+        state->Update(dt);
         state->Render();
 
         SDL_RenderPresent(renderer);

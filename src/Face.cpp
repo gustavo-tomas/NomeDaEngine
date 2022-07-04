@@ -1,5 +1,7 @@
 #include "../header/Face.h"
 #include "../header/Sound.h"
+#include "../header/InputManager.h"
+#include "../header/Camera.h"
 
 Face::Face(GameObject& associated) : Component(associated)
 {
@@ -18,10 +20,18 @@ void Face::Damage(int damage)
     cout << "HP is " << hitpoints << endl;
 }
 
-// Como face e uma classe temporaria, o request delete foi
-// movido de damage para update para melhorar o funcionamento do jogo.
 void Face::Update(float dt)
 {
+    if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON) &&
+        associated.box.Contains({ 
+            (float) InputManager::GetInstance().GetMouseX() + Camera::pos.x,
+            (float) InputManager::GetInstance().GetMouseY() + Camera::pos.y
+        })
+    ) 
+    {
+        Damage(rand() % 10 + 10);
+    }
+
     if (hitpoints <= 0)
     {
         Sound* sound = (Sound *) associated.GetComponent("Sound");
@@ -33,7 +43,7 @@ void Face::Update(float dt)
 
 void Face::Render()
 {
-    
+
 }
 
 bool Face::Is(const char* type)

@@ -1,5 +1,6 @@
 #include "../header/TileMap.h"
 #include "../header/Game.h"
+#include "../header/Camera.h"
 
 TileMap::TileMap(GameObject& associated, const char* file, TileSet* tileSet) : Component(associated)
 {
@@ -69,7 +70,7 @@ int& TileMap::At(int x, int y, int z)
     return tileMatrix[index];
 }
 
-void TileMap::RenderLayer(int layer, int cameraX, int cameraY)
+void TileMap::RenderLayer(int layer, float cameraX, float cameraY)
 {
     unsigned startPos = mapWidth * mapHeight * layer;
     unsigned endPos = mapWidth * mapHeight * (layer + 1);
@@ -79,8 +80,8 @@ void TileMap::RenderLayer(int layer, int cameraX, int cameraY)
     {
         tileSet->RenderTile(
             tileMatrix[i],
-            tileSet->GetTileWidth() * countCol,
-            tileSet->GetTileHeight() * countRow
+            tileSet->GetTileWidth() * countCol - cameraX,
+            tileSet->GetTileHeight() * countRow - cameraY
         );
         countCol = (countCol + 1) % mapWidth;
 
@@ -92,7 +93,7 @@ void TileMap::RenderLayer(int layer, int cameraX, int cameraY)
 void TileMap::Render()
 {
     for (auto i = 0; i < mapDepth; i++)
-        RenderLayer(i, 0, 0);
+        RenderLayer(i, Camera::pos.x, Camera::pos.y);
 }
 
 void TileMap::Update(float dt)
