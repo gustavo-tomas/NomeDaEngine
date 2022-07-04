@@ -92,7 +92,7 @@ void TileMap::RenderLayer(int layer, int cameraX, int cameraY)
 void TileMap::Render()
 {
     for (auto i = 0; i < mapDepth; i++)
-        RenderLayer(i, 0, 0);
+        RenderLayer(i, associated.box.x, associated.box.y);
 }
 
 void TileMap::Update(float dt)
