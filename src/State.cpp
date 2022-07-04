@@ -35,15 +35,6 @@ State::State() :
     quitRequested = false;
     music.Play(1);
     cout << "\nState created successfully!\n" << endl;
-
-    // Focus test // @TODO: delete this
-    GameObject* fcGo = new GameObject();
-    Sprite* sv = new Sprite(*fcGo, "./assets/image/sv_64.png");
-    fcGo->box.x = 512 - 64 / 2;
-    fcGo->box.y = 300 - 64 / 2;
-    
-    fcGo->AddComponent(sv);
-    objectArray.emplace_back(fcGo);
 }
 
 void State::LoadAssets()
