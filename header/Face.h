@@ -16,7 +16,6 @@ class Face : public Component {
 
     private:
         int hitpoints;
-        Vec2 initialPos; // @TODO: fix this
 };
 
 #endif // FACE_H

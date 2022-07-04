@@ -70,7 +70,7 @@ int& TileMap::At(int x, int y, int z)
     return tileMatrix[index];
 }
 
-void TileMap::RenderLayer(int layer, int cameraX, int cameraY)
+void TileMap::RenderLayer(int layer, float cameraX, float cameraY)
 {
     unsigned startPos = mapWidth * mapHeight * layer;
     unsigned endPos = mapWidth * mapHeight * (layer + 1);
@@ -80,8 +80,8 @@ void TileMap::RenderLayer(int layer, int cameraX, int cameraY)
     {
         tileSet->RenderTile(
             tileMatrix[i],
-            tileSet->GetTileWidth() * countCol + cameraX,
-            tileSet->GetTileHeight() * countRow + cameraY
+            tileSet->GetTileWidth() * countCol - cameraX,
+            tileSet->GetTileHeight() * countRow - cameraY
         );
         countCol = (countCol + 1) % mapWidth;
 
@@ -93,7 +93,7 @@ void TileMap::RenderLayer(int layer, int cameraX, int cameraY)
 void TileMap::Render()
 {
     for (auto i = 0; i < mapDepth; i++)
-        RenderLayer(i, Camera::GetInstance().pos.x, Camera::GetInstance().pos.y);
+        RenderLayer(i, Camera::pos.x, Camera::pos.y);
 }
 
 void TileMap::Update(float dt)

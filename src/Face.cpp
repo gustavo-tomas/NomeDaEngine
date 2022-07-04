@@ -6,7 +6,6 @@
 Face::Face(GameObject& associated) : Component(associated)
 {
     hitpoints = 30;
-    initialPos = Vec2(associated.box.x, associated.box.y); // @TODO: fix this
 }
 
 void Face::Damage(int damage)
@@ -25,8 +24,8 @@ void Face::Update(float dt)
 {
     if (InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON) &&
         associated.box.Contains({ 
-            (float) InputManager::GetInstance().GetMouseX(),
-            (float) InputManager::GetInstance().GetMouseY()
+            (float) InputManager::GetInstance().GetMouseX() + Camera::pos.x,
+            (float) InputManager::GetInstance().GetMouseY() + Camera::pos.y
         })
     ) 
     {
@@ -44,8 +43,7 @@ void Face::Update(float dt)
 
 void Face::Render()
 {
-    associated.box.x = Camera::GetInstance().pos.x + initialPos.x; // @TODO: fix this
-    associated.box.y = Camera::GetInstance().pos.y + initialPos.y;
+
 }
 
 bool Face::Is(const char* type)

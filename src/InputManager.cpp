@@ -29,7 +29,7 @@ void InputManager::Update()
 
     quitRequested = false;
     
-    updateCounter++; // @TODO: check
+    updateCounter++;
     
     // Returns 1 if any event is found, 0 otherwise
     while (SDL_PollEvent(&event))
@@ -41,7 +41,7 @@ void InputManager::Update()
             // If event is quit
             case SDL_QUIT:
                 quitRequested = true;
-                keyUpdate[key] = updateCounter; // @TODO: check
+                keyUpdate[key] = updateCounter;
                 break;
             
             // If event is key press
@@ -77,7 +77,7 @@ void InputManager::Update()
 
 bool InputManager::KeyPress(int key)
 {
-    return (keyState[key] && keyUpdate[key] == updateCounter); // @TODO: check
+    return (keyState[key] && keyUpdate[key] == updateCounter);
 }
 
 bool InputManager::KeyRelease(int key)

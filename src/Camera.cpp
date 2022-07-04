@@ -5,12 +5,6 @@ GameObject* Camera::focus = nullptr;
 Vec2 Camera::pos = Vec2(0, 0);
 Vec2 Camera::speed = Vec2(0, 0);
 
-Camera& Camera::GetInstance()
-{
-    static Camera instance;
-    return instance;
-}
-
 void Camera::Follow(GameObject* newFocus)
 {
     focus = newFocus;
@@ -25,11 +19,7 @@ void Camera::Update(float dt)
 {
     if (focus != nullptr)
     {
-        // @TODO: finish
-        // pos = Vec2(
-        //     focus->box.x - 512 + focus->box.w / 2,
-        //     focus->box.y - 300 + focus->box.h / 2
-        // );
+
     }
 
     else
@@ -38,15 +28,15 @@ void Camera::Update(float dt)
         pos.x = pos.x + speed.x * dt;
         pos.y = pos.y + speed.y * dt;
         
-        float maxSpeed = 250.0;
-        float incSpeed = 30.0;
+        float maxSpeed = 500.0;
+        float incSpeed = 50.0;
         float decSpeed = 10.0;
 
         if (InputManager::GetInstance().IsKeyDown(LEFT_ARROW_KEY))
-            speed.x = speed.x < maxSpeed ? speed.x + incSpeed : maxSpeed;
+            speed.x = speed.x > -maxSpeed ? speed.x - incSpeed : -maxSpeed;
 
         if (InputManager::GetInstance().IsKeyDown(RIGHT_ARROW_KEY))
-            speed.x = speed.x > -maxSpeed ? speed.x - incSpeed : -maxSpeed;
+            speed.x = speed.x < +maxSpeed ? speed.x + incSpeed : +maxSpeed;
 
         if (!InputManager::GetInstance().IsKeyDown(LEFT_ARROW_KEY) &&
             !InputManager::GetInstance().IsKeyDown(RIGHT_ARROW_KEY))
@@ -57,10 +47,10 @@ void Camera::Update(float dt)
         }
 
         if (InputManager::GetInstance().IsKeyDown(UP_ARROW_KEY))
-            speed.y = speed.y < maxSpeed ? speed.y + incSpeed : maxSpeed;
+            speed.y = speed.y > -maxSpeed ? speed.y - incSpeed : -maxSpeed;
         
         if (InputManager::GetInstance().IsKeyDown(DOWN_ARROW_KEY))
-            speed.y = speed.y > -maxSpeed ? speed.y - incSpeed : -maxSpeed;
+            speed.y = speed.y < +maxSpeed ? speed.y + incSpeed : +maxSpeed;
 
         if (!InputManager::GetInstance().IsKeyDown(UP_ARROW_KEY) &&
             !InputManager::GetInstance().IsKeyDown(DOWN_ARROW_KEY))

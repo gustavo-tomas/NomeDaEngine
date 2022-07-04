@@ -15,10 +15,10 @@ State::State() :
     // Background
     GameObject* bgGo = new GameObject();
     Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.png");
-    // CameraFollower* cf = new CameraFollower(*bgGo);
+    CameraFollower* cf = new CameraFollower(*bgGo);
 
     bgGo->AddComponent(bg);
-    // bgGo->AddComponent(cf); // @TODO: fix this
+    bgGo->AddComponent(cf);
     objectArray.emplace_back(bgGo);
 
     // Tileset & Tilemap
@@ -54,7 +54,7 @@ void State::LoadAssets()
 void State::Update(float dt)
 {
     // Updates the camera
-    Camera::GetInstance().Update(dt);
+    Camera::Update(dt);
 
     // Set quit requested
     if (InputManager::GetInstance().KeyPress(ESCAPE_KEY) ||
@@ -65,8 +65,8 @@ void State::Update(float dt)
     if (InputManager::GetInstance().KeyPress(SPACE_KEY))
     {
         Vec2 objPos = Vec2(200, 0).GetRotated(-M_PI + M_PI*(rand() % 1001)/500.0) + Vec2(
-            InputManager::GetInstance().GetMouseX() - Camera::GetInstance().pos.x,
-            InputManager::GetInstance().GetMouseY() - Camera::GetInstance().pos.y);
+            InputManager::GetInstance().GetMouseX() + Camera::pos.x,
+            InputManager::GetInstance().GetMouseY() + Camera::pos.y);
         AddObject((int) objPos.x, (int) objPos.y);
     }
 

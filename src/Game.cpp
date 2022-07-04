@@ -92,7 +92,6 @@ void Game::CalculateDeltaTime()
 {
     dt = (SDL_GetTicks() - frameStart) / 1000.0;
     frameStart = SDL_GetTicks();
-    // cout << dt << endl; // @TODO: comment
 }
 
 float Game::GetDeltaTime()
