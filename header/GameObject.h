@@ -14,6 +14,7 @@ class GameObject {
     public:
         GameObject();
         ~GameObject();
+        void Start();
         void Update(float dt);
         void Render();
         bool IsDead();
@@ -22,6 +23,7 @@ class GameObject {
         void RemoveComponent(Component* cpt);
         Component* GetComponent(const char* type);
         Rect box;
+        bool started;
 
     private:
         vector<unique_ptr<Component>> components;

@@ -60,5 +60,5 @@ void Camera::Update(float dt)
                       0;
         }
     }
-    cout << "POSX: " << pos.x << " POSY: " << pos.y << endl;
+    // cout << "POSX: " << pos.x << " POSY: " << pos.y << endl;
 }

@@ -107,13 +107,6 @@ bool TileMap::Is(const char* type)
     return (str_type == "TileMap");
 }
 
-// @TODO: needs to be changed when using multiple tilemaps for the same tileset!
-TileMap::~TileMap()
-{
-    delete tileSet;
-    cout << "TileSet deleted successfully!" << endl;
-}
-
 int TileMap::GetWidth()
 {
     return mapWidth;
