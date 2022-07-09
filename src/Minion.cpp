@@ -29,8 +29,8 @@ void Minion::Update(float dt)
 
     associated.angleDeg = arc * DEG; // Convert from Rad to Deg
 
-    associated.box.x = alienCenter->box.x + associated.box.w / 2 + rotated.x;
-    associated.box.y = alienCenter->box.y + associated.box.h / 2 + rotated.y;
+    associated.box.x = alienCenter->box.GetCenter().x - associated.box.w / 2.0 + rotated.x;
+    associated.box.y = alienCenter->box.GetCenter().y - associated.box.h / 2.0 + rotated.y;
     arc = arc <= 2.0 * M_PI ? arc + ANG_INC * dt : dt; // Prevent overflow of arc
 }
 

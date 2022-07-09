@@ -92,24 +92,27 @@ void Sprite::SetScale(float scaleX, float scaleY)
     if (scaleX != 0)
     {
         scale.x = scaleX;
-        associated.box.w *= scaleX;
-
+        float diff = abs(associated.box.w - abs(scaleX * associated.box.w));
         if (scaleX > 0)
-            associated.box.x -= associated.box.w / 2.0;
+            associated.box.x -= diff / 2.0;
         else
-            associated.box.x += associated.box.w / 2.0;
+            associated.box.x += diff / 2.0;
     }
 
     if (scaleY != 0)
     {
         scale.y = scaleY;
-        associated.box.h *= scaleY;
-
+        float diff = abs(associated.box.h - abs(scaleY * associated.box.h));
         if (scaleY > 0)
-            associated.box.y -= associated.box.h / 2.0;
+            associated.box.y -= diff / 2.0;
         else
-            associated.box.y += associated.box.h / 2.0;
+            associated.box.y += diff / 2.0;
     }
+}
+
+Vec2 Sprite::GetScale()
+{
+    return scale;
 }
 
 bool Sprite::IsOpen()

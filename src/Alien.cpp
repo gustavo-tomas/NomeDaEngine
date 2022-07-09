@@ -18,12 +18,13 @@ void Alien::Start()
 {
     State& state = Game::GetInstance().GetState();
     auto alienPtr = state.GetObjectPtr(&associated); 
-    
+    float arcOffSet = (2.0 * M_PI) / hp;
+
     for (int i = 0; i < hp; i++)
     {
         GameObject* minionGo = new GameObject();
-        Minion* minion = new Minion(*minionGo, alienPtr, i);
-        
+        Minion* minion = new Minion(*minionGo, alienPtr, arcOffSet * (float) i);
+
         minionGo->AddComponent(minion);
         auto minionPtr = state.AddObject(minionGo);
         minionArray.push_back(minionPtr);
