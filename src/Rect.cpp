@@ -19,3 +19,19 @@ bool Rect::Contains(vector<float> point)
     
     return false;
 }
+
+Vec2 Rect::GetVec()
+{
+    return Vec2(x, y);
+}
+
+void Rect::SetVec(Vec2 vec)
+{
+    x = vec.x;
+    y = vec.y;
+}
+
+Vec2 Rect::GetCenter()
+{
+    return Vec2(x + w / 2.0, y + h / 2.0);
+}

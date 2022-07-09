@@ -2,9 +2,11 @@
 #define SPRITE_H
 
 #define INCLUDE_SDL_IMAGE
+#define DEG 57.2958
 
 #include "SDL_include.h"
 #include "Component.h"
+#include "Vec2.h"
 #include <iostream>
 
 using namespace std;
@@ -22,12 +24,15 @@ class Sprite : public Component {
         void Render(int x, int y);
         int GetWidth();
         int GetHeight();
+        void SetScale(float scaleX, float scaleY);
+        Vec2 GetScale();
         bool IsOpen();
 
     private:
         SDL_Texture* texture;
         int width;
         int height;
+        Vec2 scale;
         SDL_Rect clipRect;
 };
 

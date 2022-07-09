@@ -12,8 +12,10 @@
 State::State() :
     music("./assets/audio/stageState.ogg")
 {
-    // Start
+    // Start variables
     started = false;
+    quitRequested = false;
+    music.Play(1);
 
     // Background
     GameObject* bgGo = new GameObject();
@@ -37,27 +39,14 @@ State::State() :
 
     // Alien
     GameObject* alienGo = new GameObject();
-    Alien* alien = new Alien(*alienGo, 0);
+    Alien* alien = new Alien(*alienGo, 5);
 
-    alienGo->box.x = 512;
-    alienGo->box.y = 300;
+    alienGo->box.SetVec(Vec2(512 - alienGo->box.w / 2, 300 - alienGo->box.h / 2));
 
     alienGo->AddComponent(alien);
     objectArray.emplace_back(alienGo);
 
-    // 
-    quitRequested = false;
-    music.Play(1);
     cout << "\nState created successfully!\n" << endl;
-
-    // Focus test // @TODO: delete this
-    GameObject* fcGo = new GameObject();
-    Sprite* sv = new Sprite(*fcGo, "./assets/image/sv_64.png");
-    fcGo->box.x = 512 - 64 / 2;
-    fcGo->box.y = 300 - 64 / 2;
-    
-    fcGo->AddComponent(sv);
-    objectArray.emplace_back(fcGo);
 }
 
 void State::Start()
@@ -102,7 +91,7 @@ weak_ptr<GameObject> State::AddObject(GameObject* go)
     auto ptr = shared_ptr<GameObject>(go);
     objectArray.push_back(ptr);
     if (started)
-        go->Start(); // @TODO
+        go->Start();
     
     return weak_ptr<GameObject>(ptr);
 }

@@ -24,6 +24,7 @@ class GameObject {
         Component* GetComponent(const char* type);
         Rect box;
         bool started;
+        double angleDeg;
 
     private:
         vector<unique_ptr<Component>> components;

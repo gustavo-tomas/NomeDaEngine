@@ -20,7 +20,7 @@ class Alien : public Component {
         bool Is(const char* type);
 
     private:
-        Action* action; // @TODO
+        Action* action; // @TODO: not used
         Vec2 speed;
         int hp;
         queue<Action> taskQueue;
