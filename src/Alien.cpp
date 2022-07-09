@@ -71,7 +71,7 @@ void Alien::Update(float dt)
                 // Get minion closest to pos
                 int idx = 0;
                 float shortestDist = 1000000;
-                for (int i = 0; i < minionArray.size(); i++)
+                for (unsigned int i = 0; i < minionArray.size(); i++)
                 {
                     float dist = minionArray[i].lock()->box.GetCenter().GetDistance(taskQueue.front().pos);
                     shortestDist = min(shortestDist, dist);
