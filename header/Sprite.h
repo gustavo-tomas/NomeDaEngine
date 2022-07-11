@@ -14,7 +14,7 @@ using namespace std;
 class Sprite : public Component {
     public:
         Sprite(GameObject& associated);
-        Sprite(GameObject& associated, const char* file);
+        Sprite(GameObject& associated, const char* file, int frameCount = 1, float frameTime = 1);
         ~Sprite();
         void Open(const char* file);
         void SetClip(int x, int y, int w, int h);
@@ -26,6 +26,9 @@ class Sprite : public Component {
         int GetHeight();
         void SetScale(float scaleX, float scaleY);
         Vec2 GetScale();
+        void SetFrame(int frame);
+        void SetFrameCount(int frameCount);
+        void SetFrameTime(float frameTime);
         bool IsOpen();
 
     private:
@@ -33,6 +36,10 @@ class Sprite : public Component {
         int width;
         int height;
         Vec2 scale;
+        int frameCount;
+        int currentFrame;
+        float timeElapsed;
+        float frameTime;
         SDL_Rect clipRect;
 };
 

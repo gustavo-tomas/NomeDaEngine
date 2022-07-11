@@ -9,8 +9,12 @@ Sprite::Sprite(GameObject& associated) : Component(associated)
     scale = Vec2(1, 1);
 }
 
-Sprite::Sprite(GameObject& associated, const char* file) : Sprite(associated)
+Sprite::Sprite(GameObject& associated, const char* file, int frameCount, float frameTime) : Sprite(associated)
 {
+    this->frameCount = frameCount;
+    this->frameTime = frameTime;
+    timeElapsed = 0;
+    currentFrame = 0;
     Open(file);
 }
 
@@ -24,7 +28,7 @@ void Sprite::Open(const char* file)
     texture = Resources::GetImage(file);
 
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
-    SetClip(0, 0, width, height);
+    SetClip(0, 0, width / frameCount, height);
 
     associated.box.w = width;
     associated.box.h = height;
@@ -40,7 +44,14 @@ void Sprite::SetClip(int x, int y, int width, int height)
 
 void Sprite::Update(float dt)
 {
-
+    timeElapsed += dt;
+    if (timeElapsed > frameTime)
+    {
+        currentFrame = (currentFrame + 1) % frameCount;
+        int frameWidth = width / frameCount;
+        SetClip(frameWidth * currentFrame, 0, frameWidth, height);
+        timeElapsed = 0;
+    }
 }
 
 void Sprite::Render()
@@ -79,7 +90,7 @@ bool Sprite::Is(const char* type)
 
 int Sprite::GetWidth()
 {
-    return width * scale.x;
+    return (width / frameCount) * scale.x;
 }
 
 int Sprite::GetHeight()
@@ -113,6 +124,25 @@ void Sprite::SetScale(float scaleX, float scaleY)
 Vec2 Sprite::GetScale()
 {
     return scale;
+}
+
+void Sprite::SetFrame(int frame)
+{
+    currentFrame = frame;
+    int frameWidth = width / frameCount;
+    SetClip(frameWidth * currentFrame, 0, frameWidth, height);
+}
+
+void Sprite::SetFrameCount(int frameCount)
+{
+    // @TODO: wut
+    this->frameCount = frameCount;
+    this->currentFrame = 0;
+}
+
+void Sprite::SetFrameTime(float frameTime)
+{
+    this->frameTime = frameTime;
 }
 
 bool Sprite::IsOpen()

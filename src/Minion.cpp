@@ -44,7 +44,7 @@ void Minion::Shoot(Vec2 pos)
     float maxDistance = 1000;
 
     GameObject* bulletGo = new GameObject();
-    Bullet* bullet = new Bullet(*bulletGo, angle, speed, damage, maxDistance, "./assets/image/minionbullet1.png");
+    Bullet* bullet = new Bullet(*bulletGo, angle, speed, damage, maxDistance, "./assets/image/minionbullet2.png", 3, 0.5);
     bulletGo->AddComponent(bullet);
 
     bulletGo->box.SetVec(associated.box.GetCenter());
