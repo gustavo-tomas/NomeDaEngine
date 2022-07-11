@@ -31,8 +31,7 @@ State::State() :
     TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png");
     TileMap* tileMap = new TileMap(*tileGo, "./assets/map/tileMap.txt", tileSet);
     
-    tileGo->box.x = 0;
-    tileGo->box.y = 0;
+    tileGo->box.SetVec(Vec2(0, 0));
 
     tileGo->AddComponent(tileMap);
     objectArray.emplace_back(tileGo);

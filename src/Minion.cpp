@@ -36,8 +36,6 @@ void Minion::Update(float dt)
 
 void Minion::Shoot(Vec2 pos)
 {
-    // auto vTest = Vec2(512, 300); // @TODO: delete test
-    // float angle = vTest.GetAngle(pos) - (M_PI / 4.0);
     float angle = associated.box.GetCenter().GetAngle(pos) - (M_PI / 4.0);
     float speed = 100;
     float damage = 10;
@@ -46,9 +44,7 @@ void Minion::Shoot(Vec2 pos)
     GameObject* bulletGo = new GameObject();
     Bullet* bullet = new Bullet(*bulletGo, angle, speed, damage, maxDistance, "./assets/image/minionbullet1.png");
     bulletGo->AddComponent(bullet);
-
     bulletGo->box.SetVec(associated.box.GetCenter());
-    // bulletGo->box.SetVec(vTest);
 
     State& state = Game::GetInstance().GetState();
     state.AddObject(bulletGo);

@@ -22,6 +22,14 @@ Vec2 Vec2::operator - (Vec2 const &obj)
     return res;
 }
 
+Vec2 Vec2::operator * (float const obj)
+{
+    Vec2 res;
+    res.x = x * obj;
+    res.y = y * obj;
+    return res;
+}
+
 Vec2 Vec2::GetRotated(float angle)
 {
     float x2 = x * cos(angle) - y * sin(angle);
