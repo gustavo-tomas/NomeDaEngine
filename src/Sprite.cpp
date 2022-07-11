@@ -6,6 +6,7 @@
 Sprite::Sprite(GameObject& associated) : Component(associated)
 {
     texture = nullptr;
+    scale = Vec2(1, 1);
 }
 
 Sprite::Sprite(GameObject& associated, const char* file) : Sprite(associated)
@@ -52,10 +53,17 @@ void Sprite::Render(int x, int y)
     SDL_Rect dstRect;
     dstRect.x = x;
     dstRect.y = y;
-    dstRect.w = clipRect.w;
-    dstRect.h = clipRect.h;
+    dstRect.w = clipRect.w * scale.x;
+    dstRect.h = clipRect.h * scale.y;
 
-    if (texture == nullptr || SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect) < 0)
+    if (SDL_RenderCopyEx(
+        Game::GetInstance().GetRenderer(),
+        texture,
+        &clipRect,
+        &dstRect,
+        associated.angleDeg, // 0° to 360° clockwise
+        nullptr,
+        SDL_FLIP_NONE) < 0)
     {
         cout << "Error rendering copy" << endl;
         cout << SDL_GetError() << endl;
@@ -71,12 +79,40 @@ bool Sprite::Is(const char* type)
 
 int Sprite::GetWidth()
 {
-    return width;
+    return width * scale.x;
 }
 
 int Sprite::GetHeight()
 {
-    return height;
+    return height * scale.y;
+}
+
+void Sprite::SetScale(float scaleX, float scaleY)
+{
+    if (scaleX != 0)
+    {
+        scale.x = scaleX;
+        float diff = abs(associated.box.w - abs(scaleX * associated.box.w));
+        if (scaleX > 0)
+            associated.box.x -= diff / 2.0;
+        else
+            associated.box.x += diff / 2.0;
+    }
+
+    if (scaleY != 0)
+    {
+        scale.y = scaleY;
+        float diff = abs(associated.box.h - abs(scaleY * associated.box.h));
+        if (scaleY > 0)
+            associated.box.y -= diff / 2.0;
+        else
+            associated.box.y += diff / 2.0;
+    }
+}
+
+Vec2 Sprite::GetScale()
+{
+    return scale;
 }
 
 bool Sprite::IsOpen()

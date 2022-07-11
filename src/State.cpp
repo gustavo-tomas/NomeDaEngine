@@ -1,17 +1,22 @@
 #include "../header/State.h"
 #include "../header/Game.h"
 #include "../header/Sound.h"
-#include "../header/Face.h"
 #include "../header/Vec2.h"
 #include "../header/TileSet.h"
 #include "../header/TileMap.h"
 #include "../header/InputManager.h"
 #include "../header/Camera.h"
 #include "../header/CameraFollower.h"
+#include "../header/Alien.h"
 
 State::State() :
     music("./assets/audio/stageState.ogg")
 {
+    // Start variables
+    started = false;
+    quitRequested = false;
+    music.Play(1);
+
     // Background
     GameObject* bgGo = new GameObject();
     Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.png");
@@ -26,24 +31,29 @@ State::State() :
     TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png");
     TileMap* tileMap = new TileMap(*tileGo, "./assets/map/tileMap.txt", tileSet);
     
-    tileGo->box.x = 0;
-    tileGo->box.y = 0;
+    tileGo->box.SetVec(Vec2(0, 0));
 
     tileGo->AddComponent(tileMap);
     objectArray.emplace_back(tileGo);
 
-    quitRequested = false;
-    music.Play(1);
-    cout << "\nState created successfully!\n" << endl;
+    // Alien
+    GameObject* alienGo = new GameObject();
+    Alien* alien = new Alien(*alienGo, 5);
 
-    // Focus test // @TODO: delete this
-    GameObject* fcGo = new GameObject();
-    Sprite* sv = new Sprite(*fcGo, "./assets/image/sv_64.png");
-    fcGo->box.x = 512 - 64 / 2;
-    fcGo->box.y = 300 - 64 / 2;
-    
-    fcGo->AddComponent(sv);
-    objectArray.emplace_back(fcGo);
+    alienGo->box.SetVec(Vec2(512 - alienGo->box.w / 2, 300 - alienGo->box.h / 2));
+
+    alienGo->AddComponent(alien);
+    objectArray.emplace_back(alienGo);
+
+    cout << "\nState created successfully!\n" << endl;
+}
+
+void State::Start()
+{
+    LoadAssets();
+    for (auto& obj : objectArray)
+        obj->Start();
+    started = true;
 }
 
 void State::LoadAssets()
@@ -61,15 +71,6 @@ void State::Update(float dt)
         InputManager::GetInstance().QuitRequested())
         quitRequested = true;    
 
-    // Create a face if space is pressed
-    if (InputManager::GetInstance().KeyPress(SPACE_KEY))
-    {
-        Vec2 objPos = Vec2(200, 0).GetRotated(-M_PI + M_PI*(rand() % 1001)/500.0) + Vec2(
-            InputManager::GetInstance().GetMouseX() + Camera::pos.x,
-            InputManager::GetInstance().GetMouseY() + Camera::pos.y);
-        AddObject((int) objPos.x, (int) objPos.y);
-    }
-
     for (long unsigned int i = 0; i < objectArray.size(); i++)
     {
         objectArray[i]->Update(dt);
@@ -84,22 +85,24 @@ void State::Render()
         object->Render();
 }
 
-void State::AddObject(int mouseX, int mouseY)
+weak_ptr<GameObject> State::AddObject(GameObject* go)
 {
-    GameObject* go = new GameObject();
-    go->box.x = mouseX;
-    go->box.y = mouseY;
+    auto ptr = shared_ptr<GameObject>(go);
+    objectArray.push_back(ptr);
+    if (started)
+        go->Start();
+    
+    return weak_ptr<GameObject>(ptr);
+}
 
-    Sprite* sprite = new Sprite(*go, "./assets/image/penguinface.png");
-    go->AddComponent(sprite);
-
-    Sound* sound = new Sound(*go, "./assets/audio/boom.wav");
-    go->AddComponent(sound);
-
-    Face* face = new Face(*go);
-    go->AddComponent(face);
-
-    objectArray.emplace_back(go);
+weak_ptr<GameObject> State::GetObjectPtr(GameObject* go)
+{
+    for (auto& obj : objectArray)
+    {
+        if (obj.get() == go)
+            return weak_ptr<GameObject>(obj);
+    }
+    return weak_ptr<GameObject>();
 }
 
 bool State::QuitRequested()

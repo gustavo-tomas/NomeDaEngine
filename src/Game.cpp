@@ -120,6 +120,7 @@ SDL_Renderer* Game::GetRenderer()
 void Game::Run()
 {
     // Run the engine
+    state->Start();
     while (state->QuitRequested() == false)
     {
         CalculateDeltaTime();

@@ -1,6 +1,7 @@
 #ifndef RECT_H
 #define RECT_H
 
+#include "Vec2.h"
 #include <vector>
 
 using namespace std;
@@ -13,6 +14,9 @@ class Rect {
         float w;
         float h;
         bool Contains(vector<float> point);
+        Vec2 GetVec();
+        Vec2 GetCenter();
+        void SetVec(Vec2 vec);
 };
 
 
