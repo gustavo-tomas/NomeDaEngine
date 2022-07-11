@@ -26,12 +26,9 @@ void Bullet::Update(float dt)
         return;
     }
     
-    float dX = speed.x * dt;
-    float dY = speed.y * dt;
-
-    associated.box.x += dX;
-    associated.box.y += dY;
-    distanceLeft -= sqrt(dX * dX + dY * dY);
+    Vec2 deltaS = speed * dt;
+    associated.box.SetVec(associated.box.GetVec() + deltaS);
+    distanceLeft -= sqrt(deltaS.x * deltaS.x + deltaS.y * deltaS.y);
 }
 
 void Bullet::Render()

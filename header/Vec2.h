@@ -12,6 +12,7 @@ class Vec2 {
         float GetDistance(Vec2 vec);
         Vec2 operator + (Vec2 const &obj);
         Vec2 operator - (Vec2 const &obj);
+        Vec2 operator * (float const obj);
         float x;
         float y;
 };

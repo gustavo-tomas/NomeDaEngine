@@ -44,7 +44,7 @@ void Alien::Update(float dt)
         return;
     }
     
-    associated.angleDeg -= 30 * dt; // @TODO: fix?
+    associated.angleDeg -= 30 * dt;
 
     // Checks for button press (Left = Shoot | Right = Move)
     bool leftMouse = InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON);
@@ -83,7 +83,6 @@ void Alien::Update(float dt)
                 auto target = taskQueue.front().pos;
                 
                 minion->Shoot(target);
-                cout << "IDX: " << idx << " SHOOTING: " << target.x << ", " << target.y << endl;
             }
             cout << "SHOOT REMOVED FROM Q" << endl;
             taskQueue.pop();
@@ -92,39 +91,28 @@ void Alien::Update(float dt)
         else if (taskQueue.front().type == Action::MOVE)
         {
             // Calculates distance between CurrentPos (box) <-> DesiredPos (pos)
-            Vec2 vDist = associated.box.GetCenter();
-            Vec2 pos = Vec2(taskQueue.front().pos.x, taskQueue.front().pos.y);
-            float dist = vDist.GetDistance(pos);
+            Vec2 alienPos = associated.box.GetCenter();
+            Vec2 pos = taskQueue.front().pos;
+            float dist = alienPos.GetDistance(pos);
             
-            // Calculates speed after click
+            // First time calculating angle
             if (speed.x == 0 && speed.y == 0)
             {
-                float xDist = vDist.x - pos.x;
-                float yDist = vDist.y - pos.y;
-                
-                speed.x = abs((xDist / dt) / 1000);
-                speed.y = abs((yDist / dt) / 1000);
-
-                if (xDist > 0) speed.x *= -1;
-                if (yDist > 0) speed.y *= -1;
+                float angle = alienPos.GetAngle(pos) - (M_PI / 4.0);
+                speed = Vec2(400, 400).GetRotated(angle);
             }
 
-            Vec2 newPos = associated.box.GetCenter() + speed;
+            Vec2 newPos = alienPos + (speed * dt);
             float newDist = newPos.GetDistance(pos);
 
-            // @TODO: fix click on center
-            if (dist < abs(newDist - dist))
-            {
-                speed.x = 0;
-                speed.y = 0;
-                taskQueue.pop();
-                cout << "MOVE REMOVED FROM Q" << endl;
-            }
+            if (dist >= abs(dist - newDist))
+                associated.box.SetVec(associated.box.GetVec() + (speed * dt));
 
             else
             {
-                associated.box.x += speed.x;
-                associated.box.y += speed.y;
+                speed = Vec2(0, 0);
+                taskQueue.pop();
+                cout << "MOVE REMOVED FROM Q" << endl;
             }
         }
     }
