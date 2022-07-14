@@ -17,6 +17,7 @@ class Collider : public Component {
     private:
         Vec2 scale;
         Vec2 offset;
+        static bool debug;
 };
 
 #endif // COLLIDER_H
