@@ -6,13 +6,17 @@
 class Vec2 {
     public:
         Vec2(float x = 0, float y = 0);
-        Vec2 GetRotated(float angle);
         float GetAngle();
+        float GetMagnitude();
         float GetAngle(Vec2 terminal);
         float GetDistance(Vec2 vec);
-        Vec2 operator + (Vec2 const &obj);
-        Vec2 operator - (Vec2 const &obj);
-        Vec2 operator * (float const obj);
+        float GetDot(Vec2 vec);
+        Vec2 GetRotated(float angle);
+        Vec2 GetNormal();
+        Vec2 operator + (const Vec2 &obj);
+        Vec2 operator - (const Vec2 &obj);
+        Vec2 operator * (const float obj);
+        Vec2 operator / (const float obj);
         float x;
         float y;
 };

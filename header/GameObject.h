@@ -22,6 +22,7 @@ class GameObject {
         void AddComponent(Component* cpt);
         void RemoveComponent(Component* cpt);
         Component* GetComponent(const char* type);
+        void NotifyCollision(GameObject& other);
         Rect box;
         bool started;
         double angleDeg;

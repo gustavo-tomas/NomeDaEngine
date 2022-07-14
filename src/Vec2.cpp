@@ -6,28 +6,24 @@ Vec2::Vec2(float x, float y)
     this->y = y;
 }
 
-Vec2 Vec2::operator + (Vec2 const &obj)
+Vec2 Vec2::operator + (const Vec2 &obj)
 {
-    Vec2 res;
-    res.x = x + obj.x;
-    res.y = y + obj.y;
-    return res;
+    return Vec2(x + obj.x, y + obj.y);
 }
 
-Vec2 Vec2::operator - (Vec2 const &obj)
+Vec2 Vec2::operator - (const Vec2 &obj)
 {
-    Vec2 res;
-    res.x = x - obj.x;
-    res.y = y - obj.y;
-    return res;
+    return Vec2(x - obj.x, y - obj.y);
 }
 
-Vec2 Vec2::operator * (float const obj)
+Vec2 Vec2::operator * (const float obj)
 {
-    Vec2 res;
-    res.x = x * obj;
-    res.y = y * obj;
-    return res;
+    return Vec2(x * obj, y * obj);
+}
+
+Vec2 Vec2::operator / (const float obj)
+{
+    return Vec2(x / obj, y / obj);
 }
 
 Vec2 Vec2::GetRotated(float angle)
@@ -47,9 +43,24 @@ float Vec2::GetAngle(Vec2 terminal)
     return atan2((terminal.y - y), (terminal.x - x));
 }
 
+float Vec2::GetMagnitude()
+{
+    return sqrt(x * x + y * y);
+}
+
 float Vec2::GetDistance(Vec2 vec)
 {
     float dX = x - vec.x;
     float dY = y - vec.y;
     return sqrt(dX * dX + dY * dY); 
+}
+
+float Vec2::GetDot(Vec2 vec)
+{
+    return x * vec.x + y * vec.y;
+}
+
+Vec2 Vec2::GetNormal()
+{
+    return Vec2(x, y) * (1.f / GetMagnitude());
 }
