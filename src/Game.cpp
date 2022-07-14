@@ -85,7 +85,7 @@ Game::Game(const char* title, int width, int height)
     srand(time(NULL));
 
     // Creates state
-    state = new State();
+    storedState = nullptr;
 }
 
 void Game::CalculateDeltaTime()
@@ -107,42 +107,74 @@ Game& Game::GetInstance()
     return *instance;
 }
 
-State& Game::GetState()
-{
-    return *state;
-}
-
 SDL_Renderer* Game::GetRenderer()
 {
     return renderer;
 }
 
+State& Game::GetCurrentState()
+{
+    return *(stateStack.top());
+}
+
+void Game::Push(State* state)
+{
+    storedState = state;
+}
+
 void Game::Run()
 {
-    // Run the engine
-    state->Start();
-    while (state->QuitRequested() == false)
+    if (storedState == nullptr)
+    {
+        delete this;
+        return;
+    }
+
+    stateStack.push(unique_ptr<State>(storedState));
+    stateStack.top()->Start();
+    storedState = nullptr;
+
+    while (!stateStack.empty())
     {
         CalculateDeltaTime();
         InputManager::GetInstance().Update();
-        state->Update(dt);
-        state->Render();
+        stateStack.top()->Update(dt);
+        stateStack.top()->Render();
 
         SDL_RenderPresent(renderer);
         SDL_Delay(33); // 30 FPS
+        
+        if (stateStack.top()->QuitRequested())
+        {
+            stateStack.pop();
+            if (!stateStack.empty())
+                stateStack.top()->Resume();
+        }
+        
+        if (storedState != nullptr)
+        {
+            stateStack.top()->Pause();
+            stateStack.push(unique_ptr<State>(storedState));
+            stateStack.top()->Start();
+            storedState = nullptr;
+        }
     }
-
-    // Free resources 
-    Resources::ClearImages();
-    Resources::ClearMusics();
-    Resources::ClearSounds();
     
     delete this;
 }
 
 Game::~Game()
 {
-    delete state;
+    // Free resources
+    Resources::ClearImages();
+    Resources::ClearMusics();
+    Resources::ClearSounds();
+
+    if (storedState != nullptr)
+        delete storedState;
+
+    while (!stateStack.empty())
+        stateStack.pop();
     
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

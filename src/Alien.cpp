@@ -28,7 +28,7 @@ Alien::Alien(GameObject& associated, int nMinions) : Component(associated)
 
 void Alien::Start()
 {
-    State& state = Game::GetInstance().GetState();
+    State& state = Game::GetInstance().GetCurrentState();
     auto alienPtr = state.GetObjectPtr(&associated); 
     float arcOffSet = (2.0 * M_PI) / nMinions;
 
@@ -67,7 +67,7 @@ void Alien::NotifyCollision(GameObject& other)
             alienDeathSound->Play();
             alienDeathGo->AddComponent(alienDeathSound);
 
-            Game::GetInstance().GetState().AddObject(alienDeathGo);
+            Game::GetInstance().GetCurrentState().AddObject(alienDeathGo);
         }
     }
 }

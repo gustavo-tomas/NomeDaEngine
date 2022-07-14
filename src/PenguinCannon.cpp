@@ -3,7 +3,7 @@
 #include "../header/InputManager.h"
 #include "../header/Camera.h"
 #include "../header/Bullet.h"
-#include "../header/State.h"
+#include "../header/StageState.h"
 #include "../header/Game.h"
 #include "../header/Collider.h"
 
@@ -73,7 +73,7 @@ void PenguinCannon::Shoot()
     bulletGo->box.SetVec(center - offset);
     bulletGo->AddComponent(bullet);
 
-    Game::GetInstance().GetState().AddObject(bulletGo);
+    Game::GetInstance().GetCurrentState().AddObject(bulletGo);
 
     timer.Restart();
 

@@ -55,7 +55,7 @@ void Minion::Shoot(Vec2 pos)
     bulletGo->AddComponent(bullet);
     bulletGo->box.SetVec(associated.box.GetCenter());
 
-    State& state = Game::GetInstance().GetState();
+    State& state = Game::GetInstance().GetCurrentState();
     state.AddObject(bulletGo);
 }
 

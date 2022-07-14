@@ -1,73 +1,15 @@
 #include "../header/State.h"
-#include "../header/Game.h"
-#include "../header/Sound.h"
-#include "../header/Vec2.h"
-#include "../header/TileSet.h"
-#include "../header/TileMap.h"
-#include "../header/InputManager.h"
-#include "../header/Camera.h"
-#include "../header/CameraFollower.h"
-#include "../header/Alien.h"
-#include "../header/PenguinBody.h"
-#include "../header/Collider.h"
-#include "../header/Collision.h"
 
-State::State() :
-    music("./assets/audio/stageState.ogg")
+State::State()
 {
-    // Start variables
-    started = false;
+    popRequested = false;
     quitRequested = false;
-    music.Play(1);
-
-    // Background
-    GameObject* bgGo = new GameObject();
-    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.png");
-    CameraFollower* cf = new CameraFollower(*bgGo);
-
-    bgGo->AddComponent(bg);
-    bgGo->AddComponent(cf);
-    objectArray.emplace_back(bgGo);
-
-    // Tileset & Tilemap
-    GameObject* tileGo = new GameObject();
-    TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png");
-    TileMap* tileMap = new TileMap(*tileGo, "./assets/map/tileMap.txt", tileSet);
-    
-    tileGo->box.SetVec(Vec2(0, 0));
-
-    tileGo->AddComponent(tileMap);
-    objectArray.emplace_back(tileGo);
-
-    // Alien
-    GameObject* alienGo = new GameObject();
-    Alien* alien = new Alien(*alienGo, 5);
-
-    alienGo->box.SetVec(Vec2(512 - alienGo->box.w / 2, 300 - alienGo->box.h / 2));
-
-    alienGo->AddComponent(alien);
-    objectArray.emplace_back(alienGo);
-
-    // Penguin
-    GameObject* penguinBodyGo = new GameObject();
-    PenguinBody* penguinBody = new PenguinBody(*penguinBodyGo);
-    
-    penguinBodyGo->box.SetVec(Vec2(704, 640));
-    
-    penguinBodyGo->AddComponent(penguinBody);
-    objectArray.emplace_back(penguinBodyGo);
-
-    Camera::Follow(penguinBodyGo);
-
-    cout << "\nState created successfully!\n" << endl;
+    started = false;
 }
 
-void State::Start()
+State::~State()
 {
-    LoadAssets();
-    for (unsigned long i = 0; i < objectArray.size(); i++)
-        objectArray[i]->Start();
-    started = true;
+    objectArray.clear();
 }
 
 void State::LoadAssets()
@@ -75,44 +17,29 @@ void State::LoadAssets()
 
 }
 
+void State::Start()
+{
+
+}
+
+void State::Pause()
+{
+
+}
+
+void State::Resume()
+{
+
+}
+
 void State::Update(float dt)
 {
-    // Updates the camera
-    Camera::Update(dt);
 
-    // Sets quit requested
-    if (InputManager::GetInstance().KeyPress(ESCAPE_KEY) ||
-        InputManager::GetInstance().QuitRequested())
-        quitRequested = true;    
-
-    for (unsigned long i = 0; i < objectArray.size(); i++)
-    {
-        // Updates GOs
-        objectArray[i]->Update(dt);
-        if (objectArray[i]->IsDead())
-            objectArray.erase(objectArray.begin() + i);
-
-        // Checks for colisions
-        for (unsigned long j = i + 1; j < objectArray.size(); j++)
-        {
-            Collider* colliderA = (Collider*) objectArray[i]->GetComponent("Collider");
-            Collider* colliderB = (Collider*) objectArray[j]->GetComponent("Collider");
-            if (colliderA != nullptr && colliderB != nullptr)
-            {
-                if (Collision::IsColliding(colliderA->box, colliderB->box, objectArray[i]->angleDeg, objectArray[j]->angleDeg))
-                {
-                    objectArray[i]->NotifyCollision(*objectArray[j]);
-                    objectArray[j]->NotifyCollision(*objectArray[i]);
-                }
-            }
-        }
-    }
 }
 
 void State::Render()
 {
-    for (auto& object : objectArray)
-        object->Render();
+
 }
 
 weak_ptr<GameObject> State::AddObject(GameObject* go)
@@ -128,20 +55,36 @@ weak_ptr<GameObject> State::AddObject(GameObject* go)
 weak_ptr<GameObject> State::GetObjectPtr(GameObject* go)
 {
     for (auto& obj : objectArray)
-    {
         if (obj.get() == go)
             return weak_ptr<GameObject>(obj);
-    }
+
     return weak_ptr<GameObject>();
+}
+
+void State::StartArray()
+{
+    for (unsigned int i = 0; i < objectArray.size(); i++)
+        objectArray[i]->Start();
+}
+
+void State::UpdateArray(float dt)
+{
+    for (unsigned int i = 0; i < objectArray.size(); i++)
+        objectArray[i]->Update(dt);
+}
+
+void State::RenderArray()
+{
+    for (unsigned int i = 0; i < objectArray.size(); i++)
+        objectArray[i]->Render();
+}
+
+bool State::PopRequested()
+{
+    return popRequested;
 }
 
 bool State::QuitRequested()
 {
     return quitRequested;
-}
-
-State::~State()
-{
-    objectArray.clear();
-    cout << "Object Array deleted successfully!" << endl;
 }

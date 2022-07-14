@@ -33,7 +33,7 @@ PenguinBody::~PenguinBody()
 
 void PenguinBody::Start()
 {
-    State& state = Game::GetInstance().GetState();
+    State& state = Game::GetInstance().GetCurrentState();
     
     GameObject* pcannonGo = new GameObject();
     PenguinCannon* pCannon = new PenguinCannon(*pcannonGo, state.GetObjectPtr(&associated));
@@ -126,7 +126,7 @@ void PenguinBody::NotifyCollision(GameObject& other)
             penguinDeathSound->Play();
             penguinDeathGo->AddComponent(penguinDeathSound);
 
-            Game::GetInstance().GetState().AddObject(penguinDeathGo);
+            Game::GetInstance().GetCurrentState().AddObject(penguinDeathGo);
         }
         cout << "PENGUIN HP: " << hp << endl;
     }
