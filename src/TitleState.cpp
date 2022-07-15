@@ -39,7 +39,7 @@ TitleState::TitleState() : State()
 
 TitleState::~TitleState()
 {
-
+    objectArray.clear();
 }
 
 void TitleState::LoadAssets()

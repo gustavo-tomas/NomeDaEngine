@@ -22,6 +22,9 @@ EndState::EndState()
         musicFile = "./assets/audio/endStateLose.ogg";
     }
 
+    backgroundMusic = Music(musicFile);
+    backgroundMusic.Play(1);
+    
     GameObject* bgGo = new GameObject();
     Sprite* bg = new Sprite(*bgGo, bgFile);
     CameraFollower* endFollower = new CameraFollower(*bgGo);
@@ -29,14 +32,11 @@ EndState::EndState()
     bgGo->AddComponent(endFollower);
 
     AddObject(bgGo);
-
-    backgroundMusic = Music(musicFile);
-    backgroundMusic.Play(1);
 }
 
 EndState::~EndState()
 {
-
+    objectArray.clear();
 }
 
 void EndState::Update(float dt)

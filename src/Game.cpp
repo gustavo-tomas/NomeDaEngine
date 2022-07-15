@@ -167,6 +167,10 @@ void Game::Run()
         SDL_RenderPresent(renderer);
         SDL_Delay(33); // 30 FPS
     }
+
+    // Clear the stack
+    while (!stateStack.empty())
+        stateStack.pop();    
     
     delete this;
 }

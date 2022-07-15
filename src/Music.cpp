@@ -33,9 +33,7 @@ void Music::Open(const char* file)
 
 bool Music::IsOpen()
 {
-    if (music == nullptr)
-        return true;
-    return false;
+    return (music == nullptr);
 }
 
 Music::~Music()
