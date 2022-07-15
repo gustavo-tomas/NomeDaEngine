@@ -8,23 +8,14 @@
 
 EndState::EndState()
 {
+    // Chooses background depending on the ending
     const char* bgFile;
-    const char* musicFile;
 
     if (GameData::playerVictory)
-    {
         bgFile = "./assets/image/win.jpg";
-        musicFile = "./assets/audio/endStateWin.ogg";
-    }
 
     else
-    {
         bgFile = "./assets/image/lose.jpg";
-        musicFile = "./assets/audio/endStateLose.ogg";
-    }
-
-    backgroundMusic = Music(musicFile);
-    backgroundMusic.Play(1);
     
     GameObject* bgGo = new GameObject();
     Sprite* bg = new Sprite(*bgGo, bgFile);
@@ -54,6 +45,19 @@ void EndState::Update(float dt)
 
 void EndState::LoadAssets()
 {
+    // Chooses music depending on the ending
+    const char* musicFile;
+
+    if (GameData::playerVictory)
+        musicFile = "./assets/audio/endStateWin.ogg";
+
+    else
+        musicFile = "./assets/audio/endStateLose.ogg";
+
+    backgroundMusic = Music(musicFile);
+    backgroundMusic.Play(1);
+
+    // Writes text
     GameObject* textGo = new GameObject();
     textGo->box.SetVec(Vec2(25, 350));
     CameraFollower* textFollower = new CameraFollower(*textGo, textGo->box.GetVec());
