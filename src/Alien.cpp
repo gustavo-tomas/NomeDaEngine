@@ -11,7 +11,7 @@
 
 int Alien::alienCount = 0;
 
-Alien::Alien(GameObject& associated, int nMinions) : Component(associated)
+Alien::Alien(GameObject& associated, int nMinions, float timeOffset) : Component(associated)
 {
     Sprite* sprite = new Sprite(associated, "./assets/image/alien.png");
     associated.AddComponent(sprite);
@@ -23,6 +23,7 @@ Alien::Alien(GameObject& associated, int nMinions) : Component(associated)
     hp = 20;
     alienCount++;
     state = AlienState::RESTING;
+    this->timeOffset = timeOffset;
     this->nMinions = nMinions;
 }
 
@@ -86,7 +87,7 @@ void Alien::Update(float dt)
     if (state == AlienState::RESTING)
     {
         restTimer.Update(dt);
-        if (restTimer.Get() >= 1.5)
+        if (restTimer.Get() >= 1.5 + timeOffset)
         {
             if (PenguinBody::player == nullptr)
                 return;

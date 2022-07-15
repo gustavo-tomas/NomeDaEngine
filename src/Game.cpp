@@ -33,6 +33,14 @@ Game::Game(const char* title, int width, int height)
         exit(1);
     }
 
+    // Initializes TTF
+    if (TTF_Init() != 0)
+    {
+        cout << "Error initializing TTF" << endl;
+        cout << SDL_GetError() << endl;
+        exit(1);
+    }
+
     // Initializes SDL_Mixer
     if (Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG) == 0)
     {
@@ -134,17 +142,9 @@ void Game::Run()
     stateStack.top()->Start();
     storedState = nullptr;
 
-    while (!stateStack.empty())
+    while (!stateStack.empty() && !stateStack.top()->QuitRequested())
     {
-        CalculateDeltaTime();
-        InputManager::GetInstance().Update();
-        stateStack.top()->Update(dt);
-        stateStack.top()->Render();
-
-        SDL_RenderPresent(renderer);
-        SDL_Delay(33); // 30 FPS
-        
-        if (stateStack.top()->QuitRequested())
+        if (stateStack.top()->PopRequested())
         {
             stateStack.pop();
             if (!stateStack.empty())
@@ -158,6 +158,14 @@ void Game::Run()
             stateStack.top()->Start();
             storedState = nullptr;
         }
+        
+        CalculateDeltaTime();
+        InputManager::GetInstance().Update();
+        stateStack.top()->Update(dt);
+        stateStack.top()->Render();
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(33); // 30 FPS
     }
     
     delete this;
@@ -169,6 +177,7 @@ Game::~Game()
     Resources::ClearImages();
     Resources::ClearMusics();
     Resources::ClearSounds();
+    Resources::ClearFonts();
 
     if (storedState != nullptr)
         delete storedState;
@@ -181,6 +190,7 @@ Game::~Game()
     
     Mix_CloseAudio();
     Mix_Quit();
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 

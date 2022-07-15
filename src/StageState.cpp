@@ -11,6 +11,8 @@
 #include "../header/PenguinBody.h"
 #include "../header/Collider.h"
 #include "../header/Collision.h"
+#include "../header/GameData.h"
+#include "../header/EndState.h"
 
 StageState::StageState() : State()
 {
@@ -47,7 +49,7 @@ void StageState::LoadAssets()
 
     bgGo->AddComponent(bg);
     bgGo->AddComponent(cf);
-    objectArray.emplace_back(bgGo);
+    AddObject(bgGo);
 
     // Tileset & Tilemap
     GameObject* tileGo = new GameObject();
@@ -57,16 +59,18 @@ void StageState::LoadAssets()
     tileGo->box.SetVec(Vec2(0, 0));
 
     tileGo->AddComponent(tileMap);
-    objectArray.emplace_back(tileGo);
+    AddObject(tileGo);
 
-    // Alien
-    GameObject* alienGo = new GameObject();
-    Alien* alien = new Alien(*alienGo, 5);
+    for (int i = 0; i < 5; i++)
+    {
+        GameObject* alienGo = new GameObject();
+        Alien* alien = new Alien(*alienGo, 1 + (rand() % 4), rand() % 5);
 
-    alienGo->box.SetVec(Vec2(512 - alienGo->box.w / 2, 300 - alienGo->box.h / 2));
+        alienGo->box.SetVec(Vec2(rand() % 1408, rand() % 1280));
 
-    alienGo->AddComponent(alien);
-    objectArray.emplace_back(alienGo);
+        alienGo->AddComponent(alien);
+        AddObject(alienGo);
+    }
 
     // Penguin
     GameObject* penguinBodyGo = new GameObject();
@@ -75,7 +79,7 @@ void StageState::LoadAssets()
     penguinBodyGo->box.SetVec(Vec2(704, 640));
     
     penguinBodyGo->AddComponent(penguinBody);
-    objectArray.emplace_back(penguinBodyGo);
+    AddObject(penguinBodyGo);
 
     // Camera
     Camera::Follow(penguinBodyGo);
@@ -87,9 +91,28 @@ void StageState::Update(float dt)
     Camera::Update(dt);
 
     // Sets quit requested
-    if (InputManager::GetInstance().KeyPress(ESCAPE_KEY) ||
-        InputManager::GetInstance().QuitRequested())
-        quitRequested = true;    
+    if (InputManager::GetInstance().QuitRequested())
+        quitRequested = true;
+
+    // Returns to title screen
+    if (InputManager::GetInstance().KeyPress(ESCAPE_KEY))
+        popRequested = true;
+
+    // Player is dead
+    if (PenguinBody::player == nullptr && !QuitRequested())
+    {
+        GameData::playerVictory = false;
+        Game::GetInstance().Push(new EndState());
+        popRequested = true;
+    }
+
+    // Aliens are dead
+    else if (Alien::alienCount <= 0 && !QuitRequested())
+    {
+        GameData::playerVictory = true;
+        Game::GetInstance().Push(new EndState());
+        popRequested = true;
+    }
 
     for (unsigned long i = 0; i < objectArray.size(); i++)
     {

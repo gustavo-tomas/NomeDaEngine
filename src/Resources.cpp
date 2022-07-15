@@ -4,6 +4,7 @@
 unordered_map<const char*, SDL_Texture*> Resources::imageTable;
 unordered_map<const char*, Mix_Music*> Resources::musicTable;
 unordered_map<const char*, Mix_Chunk*> Resources::soundTable;
+unordered_map<const char*, TTF_Font*> Resources::fontTable;
 
 SDL_Texture* Resources::GetImage(const char* file)
 {
@@ -71,6 +72,30 @@ Mix_Chunk* Resources::GetSound(const char* file)
     }
 }
 
+TTF_Font* Resources::GetFont(const char* file, int fontSize)
+{
+    // Concatenates file with fontSize to create key
+    string fileName = file + to_string(fontSize);
+
+    if (fontTable.find(fileName.c_str()) != fontTable.end())
+        return fontTable[fileName.c_str()];
+
+    TTF_Font* font;
+    if ((font = TTF_OpenFont(file, fontSize)) == nullptr)
+    {
+        cout << "Error loading font " << file << endl;
+        cout << SDL_GetError() << endl;
+        exit(1);
+    }
+
+    else
+    {
+        fontTable[fileName.c_str()] = font;
+        cout << "\nFont " << fileName << " loaded successfully!" << endl;
+        return fontTable[fileName.c_str()];
+    }
+}
+
 void Resources::ClearImages()
 {
     for (auto i : imageTable)
@@ -96,4 +121,13 @@ void Resources::ClearSounds()
 
     soundTable.clear();
     cout << "Sounds freed successfully!" << endl;
+}
+
+void Resources::ClearFonts()
+{
+    for (auto f : fontTable)
+        TTF_CloseFont(f.second);
+
+    fontTable.clear();
+    cout << "Fonts closed successfully!" << endl;
 }

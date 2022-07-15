@@ -62,7 +62,7 @@ void PenguinBody::Update(float dt)
     }
 
     float acc = 15.0;
-    float maxSpeed = 25.0;
+    float maxSpeed = 20.0;
 
     // Accelerates
     if (InputManager::GetInstance().IsKeyDown(W_KEY))
@@ -93,6 +93,12 @@ void PenguinBody::Update(float dt)
     associated.angleDeg = angle;
     speed = Vec2(linearSpeed, 0).GetRotated(angle);
     associated.box.SetVec(associated.box.GetVec() + speed);
+    
+    // Limits X & Y position to the limits of the tilemap
+    associated.box.x = min(1408.f, associated.box.x);
+    associated.box.x = max(0.f, associated.box.x);
+    associated.box.y = min(1280.f, associated.box.y);
+    associated.box.y = max(0.f, associated.box.y);
 }
 
 void PenguinBody::Render()
