@@ -16,19 +16,15 @@ TitleState::TitleState() : State()
     titleGo->AddComponent(titleFollower);
 
     GameObject* textGo = new GameObject();
-    textGo->box.y = 350;
-    textGo->box.x = 250;
+    textGo->box.SetVec(Vec2(250, 350));
+    CameraFollower* textFollower = new CameraFollower(*textGo, textGo->box.GetVec());
+    textGo->AddComponent(textFollower);
 
     const char* fontFile = "./assets/font/call_me_maybe.ttf";
     const char* textStr = "aperte a tecla space para continuar";
     int fontSize = 32;
     Text::TextStyle style = Text::BLENDED;
-    
-    SDL_Color color;
-    color.r = 35;
-    color.g = 35;
-    color.b = 35;
-    color.a = 255;
+    SDL_Color color = {35, 35, 35, 255};
     
     Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color, 0.75);
     textGo->AddComponent(text);

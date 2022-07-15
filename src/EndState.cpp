@@ -4,6 +4,7 @@
 #include "../header/GameObject.h"
 #include "../header/InputManager.h"
 #include "../header/CameraFollower.h"
+#include "../header/Text.h"
 
 EndState::EndState()
 {
@@ -41,10 +42,11 @@ EndState::~EndState()
 
 void EndState::Update(float dt)
 {
-    if (InputManager::GetInstance().QuitRequested())
+    if (InputManager::GetInstance().QuitRequested() ||
+        InputManager::GetInstance().KeyPress(ESCAPE_KEY))
         quitRequested = true;
 
-    if (InputManager::GetInstance().KeyPress(ESCAPE_KEY))
+    if (InputManager::GetInstance().KeyPress(SPACE_KEY))
         popRequested = true;
     
     UpdateArray(dt);
@@ -52,7 +54,21 @@ void EndState::Update(float dt)
 
 void EndState::LoadAssets()
 {
+    GameObject* textGo = new GameObject();
+    textGo->box.SetVec(Vec2(25, 350));
+    CameraFollower* textFollower = new CameraFollower(*textGo, textGo->box.GetVec());
+    textGo->AddComponent(textFollower);
 
+    const char* fontFile = "./assets/font/call_me_maybe.ttf";
+    const char* textStr = "aperte a tecla esc para sair do jogo ou space para voltar ao inicio";
+    int fontSize = 32;
+    Text::TextStyle style = Text::BLENDED;
+    SDL_Color color = {195, 35, 35, 255};
+    
+    Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color);
+    textGo->AddComponent(text);
+
+    AddObject(textGo);
 }
 
 void EndState::Render()
@@ -62,6 +78,7 @@ void EndState::Render()
 
 void EndState::Start()
 {
+    LoadAssets();
     StartArray();
 }
 
