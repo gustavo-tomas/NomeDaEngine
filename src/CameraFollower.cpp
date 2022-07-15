@@ -4,14 +4,14 @@
 
 using namespace std;
 
-CameraFollower::CameraFollower(GameObject& go) : Component(go)
+CameraFollower::CameraFollower(GameObject& go, Vec2 offset) : Component(go)
 {
-
+    this->offset = offset;
 }
 
 void CameraFollower::Update(float dt)
 {
-    associated.box.SetVec(Camera::pos);
+    associated.box.SetVec(Camera::pos + offset);
 }
 
 void CameraFollower::Render()
