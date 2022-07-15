@@ -10,5 +10,4 @@ int main(int argc, char** argv)
 }
 
 // @TODO: refactor Resources!
-// @TODO: fix text offset on title screen
 // @TODO: fix sound on end screen
