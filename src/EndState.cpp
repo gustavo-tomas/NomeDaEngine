@@ -12,10 +12,10 @@ EndState::EndState()
     const char* bgFile;
 
     if (GameData::playerVictory)
-        bgFile = "./assets/image/win.jpg";
+        bgFile = "./assets/image/win.png";
 
     else
-        bgFile = "./assets/image/lose.jpg";
+        bgFile = "./assets/image/lose.png";
     
     GameObject* bgGo = new GameObject();
     Sprite* bg = new Sprite(*bgGo, bgFile);

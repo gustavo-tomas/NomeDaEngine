@@ -20,6 +20,15 @@ bool Rect::Contains(vector<float> point)
     return false;
 }
 
+bool Rect::Contains(Vec2 point)
+{
+    if (point.x >= x && point.x <= x + w)
+        if (point.y >= y && point.y <= y + h)
+            return true;
+    
+    return false;
+}
+
 Vec2 Rect::GetVec()
 {
     return Vec2(x, y);

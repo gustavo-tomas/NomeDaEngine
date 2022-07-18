@@ -18,7 +18,7 @@ Minion::Minion(GameObject& associated, weak_ptr<GameObject> alienCenter, float a
     sprite->SetScale(scale.x, scale.y);
 
     arc = arcOffsetDeg;
-    this->alienCenter = alienCenter.lock().get();
+    if (!alienCenter.expired()) this->alienCenter = alienCenter.lock().get();
 }
 
 void Minion::Update(float dt)

@@ -21,14 +21,15 @@ PenguinCannon::PenguinCannon(GameObject& associated, weak_ptr<GameObject> pengui
 
 void PenguinCannon::Update(float dt)
 {
-    if (pbody.lock() == nullptr)
+    if (pbody.expired())
     {
         associated.RequestDelete();
         return;
     }
     
     // Updates position
-    associated.box.SetVec(pbody.lock()->box.GetCenter() - Vec2(associated.box.w / 2, associated.box.h / 2));
+    if (!pbody.expired())
+        associated.box.SetVec(pbody.lock()->box.GetCenter() - Vec2(associated.box.w / 2, associated.box.h / 2));
 
     // Updates rotation
     Vec2 pos = Vec2(InputManager::GetInstance().GetMouseX(), InputManager::GetInstance().GetMouseY()) + Camera::pos;
@@ -52,7 +53,7 @@ bool PenguinCannon::Is(const char* type)
 
 void PenguinCannon::NotifyCollision(GameObject& other)
 {
-    pbody.lock()->NotifyCollision(other);
+    if (!pbody.expired()) pbody.lock()->NotifyCollision(other);
 }
 
 void PenguinCannon::Shoot()

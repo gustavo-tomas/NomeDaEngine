@@ -10,7 +10,7 @@
 TitleState::TitleState() : State()
 {
     GameObject* titleGo = new GameObject();
-    Sprite* titleSprite = new Sprite(*titleGo, "./assets/image/title.jpg");
+    Sprite* titleSprite = new Sprite(*titleGo, "./assets/image/title.png");
     CameraFollower* titleFollower = new CameraFollower(*titleGo);
     titleGo->AddComponent(titleSprite);
     titleGo->AddComponent(titleFollower);

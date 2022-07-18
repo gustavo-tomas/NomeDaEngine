@@ -50,12 +50,12 @@ void PenguinBody::Update(float dt)
     if (hp <= 0)
     {
         associated.RequestDelete();
-        pcannon.lock()->RequestDelete();
+        if (!pcannon.expired()) pcannon.lock()->RequestDelete();
         return;
     }
 
     // Shoot
-    if (InputManager::GetInstance().IsMouseDown(LEFT_MOUSE_BUTTON))
+    if (InputManager::GetInstance().IsMouseDown(LEFT_MOUSE_BUTTON) && !pcannon.expired())
     {
         PenguinCannon* pCannon = (PenguinCannon*) pcannon.lock()->GetComponent("PenguinCannon");
         pCannon->Shoot();

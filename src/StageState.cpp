@@ -61,10 +61,11 @@ void StageState::LoadAssets()
     tileGo->AddComponent(tileMap);
     AddObject(tileGo);
 
+    // Aliens
     for (int i = 0; i < 5; i++)
     {
         GameObject* alienGo = new GameObject();
-        Alien* alien = new Alien(*alienGo, 1 + (rand() % 4), rand() % 5);
+        Alien* alien = new Alien(*alienGo, 1 + (rand() % 9), rand() % 7);
 
         alienGo->box.SetVec(Vec2(rand() % 1408, rand() % 1280));
 
@@ -87,6 +88,9 @@ void StageState::LoadAssets()
 
 void StageState::Update(float dt)
 {
+    if (QuitRequested() || PopRequested())
+        return;
+
     // Updates the camera
     Camera::Update(dt);
 
@@ -114,24 +118,29 @@ void StageState::Update(float dt)
         popRequested = true;
     }
 
+    // Updates GOs
+    UpdateArray(dt);
+
     for (unsigned long i = 0; i < objectArray.size(); i++)
     {
-        // Updates GOs
-        objectArray[i]->Update(dt);
+        // Deletes GOs
         if (objectArray[i]->IsDead())
             objectArray.erase(objectArray.begin() + i);
 
         // Checks for colisions
-        for (unsigned long j = i + 1; j < objectArray.size(); j++)
+        else
         {
-            Collider* colliderA = (Collider*) objectArray[i]->GetComponent("Collider");
-            Collider* colliderB = (Collider*) objectArray[j]->GetComponent("Collider");
-            if (colliderA != nullptr && colliderB != nullptr)
+            for (unsigned long j = i + 1; j < objectArray.size(); j++)
             {
-                if (Collision::IsColliding(colliderA->box, colliderB->box, objectArray[i]->angleDeg, objectArray[j]->angleDeg))
+                Collider* colliderA = (Collider*) objectArray[i]->GetComponent("Collider");
+                Collider* colliderB = (Collider*) objectArray[j]->GetComponent("Collider");
+                if (colliderA != nullptr && colliderB != nullptr)
                 {
-                    objectArray[i]->NotifyCollision(*objectArray[j]);
-                    objectArray[j]->NotifyCollision(*objectArray[i]);
+                    if (Collision::IsColliding(colliderA->box, colliderB->box, objectArray[i]->angleDeg, objectArray[j]->angleDeg))
+                    {
+                        objectArray[i]->NotifyCollision(*objectArray[j]);
+                        objectArray[j]->NotifyCollision(*objectArray[i]);
+                    }
                 }
             }
         }

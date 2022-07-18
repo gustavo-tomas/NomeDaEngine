@@ -107,12 +107,10 @@ void Alien::Update(float dt)
         Vec2 alienPos = associated.box.GetCenter();
         float dist = alienPos.GetDistance(destination);
 
-        Vec2 newPos = alienPos + (speed * dt);
-        float newDist = newPos.GetDistance(destination);
-
-        // Moving to destination 
-        if (dist >= abs(dist - newDist))
-            associated.box.SetVec(associated.box.GetVec() + (speed * dt));
+        // Moving to destination
+        Vec2 deltaS = (speed * dt);
+        if (dist >= deltaS.GetMagnitude())
+            associated.box.SetVec(associated.box.GetVec() + deltaS);
 
         // Finish moving and start blasting
         else
@@ -129,15 +127,20 @@ void Alien::Update(float dt)
                 float shortestDist = 1000000;
                 for (unsigned int i = 0; i < minionArray.size(); i++)
                 {
-                    float dist = minionArray[i].lock()->box.GetCenter().GetDistance(destination);
-                    shortestDist = min(shortestDist, dist);
-                    if (shortestDist == dist)
-                        idx = i;
+                    if (!minionArray[i].expired())
+                    {
+                        float dist = minionArray[i].lock()->box.GetCenter().GetDistance(destination);
+                        shortestDist = min(shortestDist, dist);
+                        if (shortestDist == dist)
+                            idx = i;
+                    }
                 }
-                auto minion = (Minion*) minionArray[idx].lock()->GetComponent("Minion");
-                auto target = destination;
-                
-                minion->Shoot(target);
+                if (!minionArray[idx].expired())
+                {
+                    auto minion = (Minion*) minionArray[idx].lock()->GetComponent("Minion");
+                    auto target = destination;
+                    minion->Shoot(target);
+                }
             }
             state = AlienState::RESTING;
             restTimer.Restart();
