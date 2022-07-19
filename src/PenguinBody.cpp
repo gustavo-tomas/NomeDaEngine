@@ -95,9 +95,9 @@ void PenguinBody::Update(float dt)
     associated.box.SetVec(associated.box.GetVec() + speed);
     
     // Limits X & Y position to the limits of the tilemap
-    associated.box.x = min(1408.f, associated.box.x);
+    associated.box.x = min(1408.f - associated.box.w, associated.box.x);
     associated.box.x = max(0.f, associated.box.x);
-    associated.box.y = min(1280.f, associated.box.y);
+    associated.box.y = min(1280.f - associated.box.h, associated.box.y);
     associated.box.y = max(0.f, associated.box.y);
 }
 
