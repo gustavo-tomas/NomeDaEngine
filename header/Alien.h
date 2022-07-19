@@ -4,7 +4,7 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "Vec2.h"
-#include "Action.h"
+#include "Timer.h"
 #include <queue>
 #include <memory>
 
@@ -18,12 +18,20 @@ class Alien : public Component {
         void Update(float dt);
         void Render();
         bool Is(const char* type);
+        void NotifyCollision(GameObject& other);
+        static int alienCount;
 
     private:
-        Action* action;
+        enum AlienState {
+            MOVING,
+            RESTING
+        };
+        AlienState state;
+        Timer restTimer;
+        Vec2 destination;
         Vec2 speed;
         int hp;
-        queue<Action> taskQueue;
+        int nMinions;
         vector<weak_ptr<GameObject>> minionArray;
 };
 

@@ -11,6 +11,7 @@ class Component {
         void virtual Update(float dt) = 0; // pure
         void virtual Render() = 0; // pure
         bool virtual Is(const char* type) = 0; // pure
+        void virtual NotifyCollision(GameObject& other);
 
     protected:
         GameObject& associated;

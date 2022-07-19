@@ -18,9 +18,7 @@ void Camera::Unfollow()
 void Camera::Update(float dt)
 {
     if (focus != nullptr)
-    {
-
-    }
+        pos = focus->box.GetCenter() - Vec2(512, 300);
 
     else
     {

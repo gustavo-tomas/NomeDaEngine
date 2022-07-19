@@ -4,23 +4,35 @@
 #include "../header/Camera.h"
 #include "../header/Minion.h"
 #include "../header/Game.h"
+#include "../header/Collider.h"
+#include "../header/Bullet.h"
+#include "../header/Sound.h"
+#include "../header/PenguinBody.h"
+
+int Alien::alienCount = 0;
 
 Alien::Alien(GameObject& associated, int nMinions) : Component(associated)
 {
     Sprite* sprite = new Sprite(associated, "./assets/image/alien.png");
     associated.AddComponent(sprite);
+    
+    Collider* collider = new Collider(associated);
+    associated.AddComponent(collider);
 
     speed = Vec2(0, 0);
-    hp = nMinions; // Number of minions = HP of the alien
+    hp = 20;
+    alienCount++;
+    state = AlienState::RESTING;
+    this->nMinions = nMinions;
 }
 
 void Alien::Start()
 {
     State& state = Game::GetInstance().GetState();
     auto alienPtr = state.GetObjectPtr(&associated); 
-    float arcOffSet = (2.0 * M_PI) / hp;
+    float arcOffSet = (2.0 * M_PI) / nMinions;
 
-    for (int i = 0; i < hp; i++)
+    for (int i = 0; i < nMinions; i++)
     {
         GameObject* minionGo = new GameObject();
         Minion* minion = new Minion(*minionGo, alienPtr, arcOffSet * (float) i);
@@ -33,7 +45,31 @@ void Alien::Start()
 
 Alien::~Alien()
 {
+    alienCount--;
     minionArray.clear();
+}
+
+void Alien::NotifyCollision(GameObject& other)
+{
+    Bullet* bullet = (Bullet*) other.GetComponent("Bullet");
+    if (hp > 0 && bullet != nullptr && !bullet->targetsPlayer)
+    {
+        hp -= bullet->GetDamage();
+        if (hp <= 0)
+        {
+            GameObject* alienDeathGo = new GameObject();
+            alienDeathGo->box = associated.box;
+
+            Sprite* alienDeathSprite = new Sprite(*alienDeathGo, "./assets/image/aliendeath.png", 4, 0.25, 1.0);
+            alienDeathGo->AddComponent(alienDeathSprite);
+            
+            Sound* alienDeathSound = new Sound(*alienDeathGo, "./assets/audio/boom.wav");
+            alienDeathSound->Play();
+            alienDeathGo->AddComponent(alienDeathSound);
+
+            Game::GetInstance().GetState().AddObject(alienDeathGo);
+        }
+    }
 }
 
 void Alien::Update(float dt)
@@ -44,29 +80,47 @@ void Alien::Update(float dt)
         return;
     }
     
-    associated.angleDeg -= 30 * dt;
+    associated.angleDeg -= (M_PI / 10.0) * dt;
 
-    // Checks for button press (Left = Shoot | Right = Move)
-    bool leftMouse = InputManager::GetInstance().MousePress(LEFT_MOUSE_BUTTON);
-    bool rightMouse = InputManager::GetInstance().MousePress(RIGHT_MOUSE_BUTTON);
-
-    float mouseX = InputManager::GetInstance().GetMouseX() + Camera::pos.x;
-    float mouseY = InputManager::GetInstance().GetMouseY() + Camera::pos.y;
-    
-    if (leftMouse || rightMouse)
+    // Resting State
+    if (state == AlienState::RESTING)
     {
-        if (leftMouse)
-            taskQueue.push(Action(Action::SHOOT, mouseX, mouseY));
-        else
-            taskQueue.push(Action(Action::MOVE, mouseX, mouseY));
+        restTimer.Update(dt);
+        if (restTimer.Get() >= 1.5)
+        {
+            if (PenguinBody::player == nullptr)
+                return;
+            
+            destination = Camera::pos + Vec2(512, 300); // Big brain time
+            Vec2 alienPos = associated.box.GetCenter();
+            float angle = alienPos.GetAngle(destination) - (M_PI / 4.0);
+            speed = Vec2(400, 400).GetRotated(angle);
+            state = AlienState::MOVING;
+        }
     }
 
-    // Checks for pending actions
-    if (!taskQueue.empty())
+    // Moving State
+    else
     {
-        // Shoots if any minions are alive
-        if (taskQueue.front().type == Action::SHOOT)
+        // Calculates distance between alienPos <-> destination
+        Vec2 alienPos = associated.box.GetCenter();
+        float dist = alienPos.GetDistance(destination);
+
+        Vec2 newPos = alienPos + (speed * dt);
+        float newDist = newPos.GetDistance(destination);
+
+        // Moving to destination 
+        if (dist >= abs(dist - newDist))
+            associated.box.SetVec(associated.box.GetVec() + (speed * dt));
+
+        // Finish moving and start blasting
+        else
         {
+            if (PenguinBody::player == nullptr)
+                return;
+            
+            speed = Vec2(0, 0);
+            destination = Camera::pos + Vec2(512, 300); // Big brain time
             if (minionArray.size() > 0)
             {
                 // Get minion closest to pos
@@ -74,46 +128,18 @@ void Alien::Update(float dt)
                 float shortestDist = 1000000;
                 for (unsigned int i = 0; i < minionArray.size(); i++)
                 {
-                    float dist = minionArray[i].lock()->box.GetCenter().GetDistance(taskQueue.front().pos);
+                    float dist = minionArray[i].lock()->box.GetCenter().GetDistance(destination);
                     shortestDist = min(shortestDist, dist);
                     if (shortestDist == dist)
                         idx = i;
                 }
-                auto minion = (Minion *) minionArray[idx].lock()->GetComponent("Minion");
-                auto target = taskQueue.front().pos;
+                auto minion = (Minion*) minionArray[idx].lock()->GetComponent("Minion");
+                auto target = destination;
                 
                 minion->Shoot(target);
             }
-            cout << "SHOOT REMOVED FROM Q" << endl;
-            taskQueue.pop();
-        }
-
-        else if (taskQueue.front().type == Action::MOVE)
-        {
-            // Calculates distance between CurrentPos (box) <-> DesiredPos (pos)
-            Vec2 alienPos = associated.box.GetCenter();
-            Vec2 pos = taskQueue.front().pos;
-            float dist = alienPos.GetDistance(pos);
-            
-            // First time calculating angle
-            if (speed.x == 0 && speed.y == 0)
-            {
-                float angle = alienPos.GetAngle(pos) - (M_PI / 4.0);
-                speed = Vec2(400, 400).GetRotated(angle);
-            }
-
-            Vec2 newPos = alienPos + (speed * dt);
-            float newDist = newPos.GetDistance(pos);
-
-            if (dist >= abs(dist - newDist))
-                associated.box.SetVec(associated.box.GetVec() + (speed * dt));
-
-            else
-            {
-                speed = Vec2(0, 0);
-                taskQueue.pop();
-                cout << "MOVE REMOVED FROM Q" << endl;
-            }
+            state = AlienState::RESTING;
+            restTimer.Restart();
         }
     }
 }

@@ -8,6 +8,9 @@
 #include "../header/Camera.h"
 #include "../header/CameraFollower.h"
 #include "../header/Alien.h"
+#include "../header/PenguinBody.h"
+#include "../header/Collider.h"
+#include "../header/Collision.h"
 
 State::State() :
     music("./assets/audio/stageState.ogg")
@@ -45,14 +48,25 @@ State::State() :
     alienGo->AddComponent(alien);
     objectArray.emplace_back(alienGo);
 
+    // Penguin
+    GameObject* penguinBodyGo = new GameObject();
+    PenguinBody* penguinBody = new PenguinBody(*penguinBodyGo);
+    
+    penguinBodyGo->box.SetVec(Vec2(704, 640));
+    
+    penguinBodyGo->AddComponent(penguinBody);
+    objectArray.emplace_back(penguinBodyGo);
+
+    Camera::Follow(penguinBodyGo);
+
     cout << "\nState created successfully!\n" << endl;
 }
 
 void State::Start()
 {
     LoadAssets();
-    for (auto& obj : objectArray)
-        obj->Start();
+    for (unsigned long i = 0; i < objectArray.size(); i++)
+        objectArray[i]->Start();
     started = true;
 }
 
@@ -66,16 +80,37 @@ void State::Update(float dt)
     // Updates the camera
     Camera::Update(dt);
 
-    // Set quit requested
+    // Sets quit requested
     if (InputManager::GetInstance().KeyPress(ESCAPE_KEY) ||
         InputManager::GetInstance().QuitRequested())
         quitRequested = true;    
 
-    for (long unsigned int i = 0; i < objectArray.size(); i++)
-    {
+    // Updates GOs
+    for (unsigned long i = 0; i < objectArray.size(); i++)
         objectArray[i]->Update(dt);
+
+    // Checks for colisions
+    for (unsigned long i = 0; i < objectArray.size(); i++)
+    {
         if (objectArray[i]->IsDead())
             objectArray.erase(objectArray.begin() + i);
+
+        else
+        {
+            for (unsigned long j = i + 1; j < objectArray.size(); j++)
+            {
+                Collider* colliderA = (Collider*) objectArray[i]->GetComponent("Collider");
+                Collider* colliderB = (Collider*) objectArray[j]->GetComponent("Collider");
+                if (colliderA != nullptr && colliderB != nullptr)
+                {
+                    if (Collision::IsColliding(colliderA->box, colliderB->box, objectArray[i]->angleDeg, objectArray[j]->angleDeg))
+                    {
+                        objectArray[i]->NotifyCollision(*objectArray[j]);
+                        objectArray[j]->NotifyCollision(*objectArray[i]);
+                    }
+                }
+            }
+        }
     }
 }
 

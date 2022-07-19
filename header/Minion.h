@@ -13,6 +13,7 @@ class Minion : public Component {
         void Update(float dt);
         void Render();
         bool Is(const char* type);
+        void NotifyCollision(GameObject& other);
         void Shoot(Vec2 target);
 
     private:

@@ -14,3 +14,8 @@ void Component::Start()
 {
 
 }
+
+void Component::NotifyCollision(GameObject& other)
+{
+    
+}
