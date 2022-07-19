@@ -85,24 +85,29 @@ void State::Update(float dt)
         InputManager::GetInstance().QuitRequested())
         quitRequested = true;    
 
+    // Updates GOs
+    for (unsigned long i = 0; i < objectArray.size(); i++)
+        objectArray[i]->Update(dt);
+
+    // Checks for colisions
     for (unsigned long i = 0; i < objectArray.size(); i++)
     {
-        // Updates GOs
-        objectArray[i]->Update(dt);
         if (objectArray[i]->IsDead())
             objectArray.erase(objectArray.begin() + i);
 
-        // Checks for colisions
-        for (unsigned long j = i + 1; j < objectArray.size(); j++)
+        else
         {
-            Collider* colliderA = (Collider*) objectArray[i]->GetComponent("Collider");
-            Collider* colliderB = (Collider*) objectArray[j]->GetComponent("Collider");
-            if (colliderA != nullptr && colliderB != nullptr)
+            for (unsigned long j = i + 1; j < objectArray.size(); j++)
             {
-                if (Collision::IsColliding(colliderA->box, colliderB->box, objectArray[i]->angleDeg, objectArray[j]->angleDeg))
+                Collider* colliderA = (Collider*) objectArray[i]->GetComponent("Collider");
+                Collider* colliderB = (Collider*) objectArray[j]->GetComponent("Collider");
+                if (colliderA != nullptr && colliderB != nullptr)
                 {
-                    objectArray[i]->NotifyCollision(*objectArray[j]);
-                    objectArray[j]->NotifyCollision(*objectArray[i]);
+                    if (Collision::IsColliding(colliderA->box, colliderB->box, objectArray[i]->angleDeg, objectArray[j]->angleDeg))
+                    {
+                        objectArray[i]->NotifyCollision(*objectArray[j]);
+                        objectArray[j]->NotifyCollision(*objectArray[i]);
+                    }
                 }
             }
         }
