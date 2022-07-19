@@ -62,8 +62,8 @@ void PenguinBody::Update(float dt)
     }
 
     // @TODO: fix FPS issue
-    float acc = 10.0;
-    float maxSpeed = 15.0;
+    float acc = 500.0;
+    float maxSpeed = 550.0;
 
     // Accelerates
     if (InputManager::GetInstance().IsKeyDown(W_KEY))
@@ -75,11 +75,11 @@ void PenguinBody::Update(float dt)
 
     // Turns Right
     if (InputManager::GetInstance().IsKeyDown(D_KEY))
-        angle += 0.1;
+        angle += 2.5 * dt;
 
     // Turns Left
     if (InputManager::GetInstance().IsKeyDown(A_KEY))
-        angle -= 0.1;
+        angle -= 2.5 * dt;
 
     // Comes to a halt
     if (!InputManager::GetInstance().IsKeyDown(W_KEY) &&
@@ -93,7 +93,7 @@ void PenguinBody::Update(float dt)
     // Updates sprite and position
     associated.angleDeg = angle;
     speed = Vec2(linearSpeed, 0).GetRotated(angle);
-    associated.box.SetVec(associated.box.GetVec() + speed);
+    associated.box.SetVec(associated.box.GetVec() + speed * dt);
     
     // Limits X & Y position to the limits of the tilemap
     associated.box.x = min(1408.f - associated.box.w, associated.box.x);

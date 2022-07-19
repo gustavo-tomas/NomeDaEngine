@@ -61,7 +61,7 @@ void PenguinCannon::Shoot()
     if (timer.Get() < 0.40)
         return;
 
-    float speed = 300;
+    float speed = 700;
     float damage = 10;
     float maxDistance = 1000;
 
