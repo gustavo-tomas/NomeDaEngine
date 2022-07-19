@@ -61,8 +61,8 @@ void PenguinBody::Update(float dt)
         pCannon->Shoot();
     }
 
-    float acc = 15.0;
-    float maxSpeed = 20.0;
+    float acc = 10.0;
+    float maxSpeed = 15.0;
 
     // Accelerates
     if (InputManager::GetInstance().IsKeyDown(W_KEY))
