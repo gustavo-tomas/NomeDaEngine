@@ -8,6 +8,7 @@
 #include "../header/Bullet.h"
 #include "../header/Sound.h"
 #include "../header/PenguinBody.h"
+#include "../header/GameData.h"
 
 int Alien::alienCount = 0;
 
@@ -92,7 +93,7 @@ void Alien::Update(float dt)
             if (PenguinBody::player == nullptr)
                 return;
             
-            destination = Camera::pos + Vec2(512, 300); // Big brain time
+            destination = Camera::pos + Vec2(GameData::WIDTH / 2.0, GameData::HEIGHT / 2.0); // Big brain time
             Vec2 alienPos = associated.box.GetCenter();
             float angle = alienPos.GetAngle(destination) - (M_PI / 4.0);
             speed = Vec2(400, 400).GetRotated(angle);
@@ -119,7 +120,7 @@ void Alien::Update(float dt)
                 return;
             
             speed = Vec2(0, 0);
-            destination = Camera::pos + Vec2(512, 300); // Big brain time
+            destination = Camera::pos + Vec2(GameData::WIDTH / 2.0, GameData::HEIGHT / 2.0); // Big brain time
             if (minionArray.size() > 0)
             {
                 // Get minion closest to pos

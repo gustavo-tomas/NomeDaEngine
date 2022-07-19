@@ -1,9 +1,6 @@
 #include "../header/Game.h"
 #include "../header/InputManager.h"
-
-const int WIDTH = 1024;
-const int HEIGHT = 600;
-const char* TITLE = "Gustavo Tomas de Paula - 190014148";
+#include "../header/GameData.h"
 
 Game* Game::instance = nullptr;
 
@@ -110,7 +107,7 @@ float Game::GetDeltaTime()
 Game& Game::GetInstance()
 {
     if (instance == nullptr)
-        instance = new Game(TITLE, WIDTH, HEIGHT);
+        instance = new Game(GameData::TITLE, GameData::WIDTH, GameData::HEIGHT);
 
     return *instance;
 }
