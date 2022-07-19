@@ -69,7 +69,7 @@ void PenguinCannon::Shoot()
     Bullet* bullet = new Bullet(*bulletGo, angle - (M_PI / 4.0), speed, damage, maxDistance, "./assets/image/penguinbullet.png", 4, 0.5, false);
     
     Vec2 center = associated.box.GetCenter();
-    Vec2 offset = bulletGo->box.GetCenter() - Vec2(65, 0).GetRotated(angle);
+    Vec2 offset = Vec2(bulletGo->box.w / 2.0, bulletGo->box.h / 2.0) - Vec2(associated.box.w / 2.0, 0).GetRotated(angle);
     
     bulletGo->box.SetVec(center - offset);
     bulletGo->AddComponent(bullet);
@@ -77,10 +77,4 @@ void PenguinCannon::Shoot()
     Game::GetInstance().GetCurrentState().AddObject(bulletGo);
 
     timer.Restart();
-
-    // @TODO: big fix
-    // cout << "PCANNON CENTER:" << associated.box.GetCenter().x << "," << associated.box.GetCenter().y << endl;
-    // cout << "PCANNON POS:" << associated.box.x << "," << associated.box.y << endl;
-    // cout << "BULLET CENTER: " << bulletGo->box.GetCenter().x << "," << bulletGo->box.GetCenter().y << endl;
-    // cout << "BULLET POS: " << bulletGo->box.x << "," << bulletGo->box.y << endl;
 }
