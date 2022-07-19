@@ -1,6 +1,7 @@
 #include "../header/Game.h"
 #include "../header/InputManager.h"
 #include "../header/GameData.h"
+#include "../header/CameraFollower.h"
 
 Game* Game::instance = nullptr;
 
@@ -93,6 +94,18 @@ Game::Game(const char* title, int width, int height)
     storedState = nullptr;
 }
 
+void Game::UpdateDelay(Uint64 start, Uint64 end)
+{
+    float elapsed = (end - start) / (float) SDL_GetPerformanceFrequency();
+    GameData::delay = (1000.0f / GameData::targetFPS) - (elapsed * 1000.0f);
+}
+
+void Game::UpdateFPS(Uint64 start, Uint64 end)
+{
+    float elapsed = (end - start) / (float) SDL_GetPerformanceFrequency();
+    GameData::currentFPS = 1.0f / elapsed;
+}
+
 void Game::CalculateDeltaTime()
 {
     dt = (SDL_GetTicks() - frameStart) / 1000.0;
@@ -141,6 +154,8 @@ void Game::Run()
 
     while (!stateStack.empty() && !stateStack.top()->QuitRequested())
     {
+        Uint64 start = SDL_GetPerformanceCounter();
+
         if (stateStack.top()->PopRequested())
         {
             stateStack.pop();
@@ -162,7 +177,12 @@ void Game::Run()
         stateStack.top()->Render();
 
         SDL_RenderPresent(renderer);
-        SDL_Delay(33); // 30 FPS
+
+        Uint64 end = SDL_GetPerformanceCounter();
+        UpdateDelay(start, end);
+    
+        if (GameData::delay > 0.0) SDL_Delay(GameData::delay);
+        UpdateFPS(start, SDL_GetPerformanceCounter());
     }
 
     // Clear the stack

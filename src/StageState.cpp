@@ -13,10 +13,11 @@
 #include "../header/Collision.h"
 #include "../header/GameData.h"
 #include "../header/EndState.h"
+#include "../header/Text.h"
 
 StageState::StageState() : State()
 {
-    cout << "\nState created successfully!\n" << endl;
+    cout << "\nStageState created successfully!\n" << endl;
 }
 
 void StageState::Start()
@@ -84,6 +85,22 @@ void StageState::LoadAssets()
 
     // Camera
     Camera::Follow(penguinBodyGo);
+
+    // FPS counter
+    GameObject* textGo = new GameObject();
+    CameraFollower* textFollower = new CameraFollower(*textGo, textGo->box.GetVec());
+    textGo->AddComponent(textFollower);
+
+    const char* fontFile = "./assets/font/call_me_maybe.ttf";
+    const char* textStr = "FPS ";
+    int fontSize = 20;
+    Text::TextStyle style = Text::BLENDED;
+    SDL_Color color = {185, 35, 35, 255};
+    
+    Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color);
+    textGo->AddComponent(text);
+    
+    AddObject(textGo);
 }
 
 void StageState::Update(float dt)
@@ -126,6 +143,11 @@ void StageState::Update(float dt)
         // Deletes GOs
         if (objectArray[i]->IsDead())
             objectArray.erase(objectArray.begin() + i);
+
+        // Updates FPS counter
+        Text* FPS_Text = (Text*) objectArray[i]->GetComponent("Text");
+        if (FPS_Text != nullptr)
+            FPS_Text->SetText(("FPS " + to_string(floor(GameData::currentFPS))).c_str());
 
         // Checks for colisions
         else

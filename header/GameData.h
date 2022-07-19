@@ -3,10 +3,13 @@
 
 class GameData {
     public:
-        static bool playerVictory;
         static const int WIDTH;
         static const int HEIGHT;
         static const char* TITLE;
+        static bool playerVictory;
+        static float targetFPS;
+        static float currentFPS;
+        static float delay;
 };
 
 #endif // GAMEDATA_H

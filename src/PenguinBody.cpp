@@ -61,6 +61,7 @@ void PenguinBody::Update(float dt)
         pCannon->Shoot();
     }
 
+    // @TODO: fix FPS issue
     float acc = 10.0;
     float maxSpeed = 15.0;
 

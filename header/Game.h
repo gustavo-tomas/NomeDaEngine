@@ -28,6 +28,8 @@ class Game {
 
     private:
         void CalculateDeltaTime();
+        void UpdateDelay(Uint64 start, Uint64 end);
+        void UpdateFPS(Uint64 start, Uint64 end);
         int frameStart;
         float dt;
         static Game* instance;
