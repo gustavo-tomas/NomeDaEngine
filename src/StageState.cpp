@@ -93,9 +93,9 @@ void StageState::LoadAssets()
 
     const char* fontFile = "./assets/font/call_me_maybe.ttf";
     const char* textStr = "FPS ";
-    int fontSize = 20;
+    int fontSize = 16;
     Text::TextStyle style = Text::BLENDED;
-    SDL_Color color = {185, 35, 35, 255};
+    SDL_Color color = {212, 15, 15, 255};
     
     Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color);
     textGo->AddComponent(text);
@@ -144,7 +144,7 @@ void StageState::Update(float dt)
         if (objectArray[i]->IsDead())
             objectArray.erase(objectArray.begin() + i);
 
-        // Updates FPS counter
+        // Updates FPS counter - Turning into a component might be better 
         Text* FPS_Text = (Text*) objectArray[i]->GetComponent("Text");
         if (FPS_Text != nullptr)
             FPS_Text->SetText(("FPS " + to_string(floor(GameData::currentFPS))).c_str());

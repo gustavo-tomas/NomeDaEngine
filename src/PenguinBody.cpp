@@ -61,8 +61,8 @@ void PenguinBody::Update(float dt)
         pCannon->Shoot();
     }
 
-    // @TODO: fix FPS issue
     float acc = 500.0;
+    float dec = 300.0;
     float maxSpeed = 550.0;
 
     // Accelerates
@@ -85,9 +85,9 @@ void PenguinBody::Update(float dt)
     if (!InputManager::GetInstance().IsKeyDown(W_KEY) &&
         !InputManager::GetInstance().IsKeyDown(S_KEY))
     {
-        linearSpeed = linearSpeed > 0 ? linearSpeed - acc * dt : linearSpeed;
-        linearSpeed = linearSpeed < 0 ? linearSpeed + acc * dt : linearSpeed;
-        linearSpeed = abs(linearSpeed) <= 0.5 ? 0 : linearSpeed;
+        linearSpeed = linearSpeed > 0 ? linearSpeed - dec * dt : linearSpeed;
+        linearSpeed = linearSpeed < 0 ? linearSpeed + dec * dt : linearSpeed;
+        linearSpeed = abs(linearSpeed) <= 5.0 ? 0 : linearSpeed - 1.0;
     }
 
     // Updates sprite and position
