@@ -3,6 +3,7 @@
 
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
+#define INCLUDE_SDL_TTF
 
 #include "SDL_include.h"
 #include "Game.h"
@@ -12,17 +13,20 @@ using namespace std;
 
 class Resources {
     public:
-        static SDL_Texture* GetImage(const char* file);
-        static Mix_Music* GetMusic(const char* file);
-        static Mix_Chunk* GetSound(const char* file);
+        static SDL_Texture* GetImage(string file);
+        static Mix_Music* GetMusic(string file);
+        static Mix_Chunk* GetSound(string file);
+        static TTF_Font* GetFont(string file, int fontSize);
         static void ClearImages();
         static void ClearMusics();
         static void ClearSounds();
+        static void ClearFonts();
 
     private:
-        static unordered_map<const char*, SDL_Texture*> imageTable;
-        static unordered_map<const char*, Mix_Music*> musicTable;
-        static unordered_map<const char*, Mix_Chunk*> soundTable;
+        static unordered_map<string, SDL_Texture*> imageTable;
+        static unordered_map<string, Mix_Music*> musicTable;
+        static unordered_map<string, Mix_Chunk*> soundTable;
+        static unordered_map<string, TTF_Font*> fontTable;
 };
 
 #endif // RESOURCES_H

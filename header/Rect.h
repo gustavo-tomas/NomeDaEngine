@@ -14,6 +14,7 @@ class Rect {
         float w;
         float h;
         bool Contains(vector<float> point);
+        bool Contains(Vec2 point);
         Vec2 GetVec();
         Vec2 GetCenter();
         void SetVec(Vec2 vec);

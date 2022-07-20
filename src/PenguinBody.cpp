@@ -33,7 +33,7 @@ PenguinBody::~PenguinBody()
 
 void PenguinBody::Start()
 {
-    State& state = Game::GetInstance().GetState();
+    State& state = Game::GetInstance().GetCurrentState();
     
     GameObject* pcannonGo = new GameObject();
     PenguinCannon* pCannon = new PenguinCannon(*pcannonGo, state.GetObjectPtr(&associated));
@@ -50,19 +50,20 @@ void PenguinBody::Update(float dt)
     if (hp <= 0)
     {
         associated.RequestDelete();
-        pcannon.lock()->RequestDelete();
+        if (!pcannon.expired()) pcannon.lock()->RequestDelete();
         return;
     }
 
     // Shoot
-    if (InputManager::GetInstance().IsMouseDown(LEFT_MOUSE_BUTTON))
+    if (InputManager::GetInstance().IsMouseDown(LEFT_MOUSE_BUTTON) && !pcannon.expired())
     {
         PenguinCannon* pCannon = (PenguinCannon*) pcannon.lock()->GetComponent("PenguinCannon");
         pCannon->Shoot();
     }
 
-    float acc = 15.0;
-    float maxSpeed = 25.0;
+    float acc = 500.0;
+    float dec = 300.0;
+    float maxSpeed = 550.0;
 
     // Accelerates
     if (InputManager::GetInstance().IsKeyDown(W_KEY))
@@ -74,25 +75,31 @@ void PenguinBody::Update(float dt)
 
     // Turns Right
     if (InputManager::GetInstance().IsKeyDown(D_KEY))
-        angle += 0.1;
+        angle += 2.5 * dt;
 
     // Turns Left
     if (InputManager::GetInstance().IsKeyDown(A_KEY))
-        angle -= 0.1;
+        angle -= 2.5 * dt;
 
     // Comes to a halt
     if (!InputManager::GetInstance().IsKeyDown(W_KEY) &&
         !InputManager::GetInstance().IsKeyDown(S_KEY))
     {
-        linearSpeed = linearSpeed > 0 ? linearSpeed - acc * dt : linearSpeed;
-        linearSpeed = linearSpeed < 0 ? linearSpeed + acc * dt : linearSpeed;
-        linearSpeed = abs(linearSpeed) <= 0.5 ? 0 : linearSpeed;
+        linearSpeed = linearSpeed > 0 ? linearSpeed - dec * dt : linearSpeed;
+        linearSpeed = linearSpeed < 0 ? linearSpeed + dec * dt : linearSpeed;
+        linearSpeed = abs(linearSpeed) <= 5.0 ? 0 : linearSpeed - 1.0;
     }
 
     // Updates sprite and position
     associated.angleDeg = angle;
     speed = Vec2(linearSpeed, 0).GetRotated(angle);
-    associated.box.SetVec(associated.box.GetVec() + speed);
+    associated.box.SetVec(associated.box.GetVec() + speed * dt);
+    
+    // Limits X & Y position to the limits of the tilemap
+    associated.box.x = min(1408.f - associated.box.w, associated.box.x);
+    associated.box.x = max(0.f, associated.box.x);
+    associated.box.y = min(1280.f - associated.box.h, associated.box.y);
+    associated.box.y = max(0.f, associated.box.y);
 }
 
 void PenguinBody::Render()
@@ -126,7 +133,7 @@ void PenguinBody::NotifyCollision(GameObject& other)
             penguinDeathSound->Play();
             penguinDeathGo->AddComponent(penguinDeathSound);
 
-            Game::GetInstance().GetState().AddObject(penguinDeathGo);
+            Game::GetInstance().GetCurrentState().AddObject(penguinDeathGo);
         }
         cout << "PENGUIN HP: " << hp << endl;
     }

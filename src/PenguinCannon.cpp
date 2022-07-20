@@ -3,7 +3,7 @@
 #include "../header/InputManager.h"
 #include "../header/Camera.h"
 #include "../header/Bullet.h"
-#include "../header/State.h"
+#include "../header/StageState.h"
 #include "../header/Game.h"
 #include "../header/Collider.h"
 
@@ -21,14 +21,15 @@ PenguinCannon::PenguinCannon(GameObject& associated, weak_ptr<GameObject> pengui
 
 void PenguinCannon::Update(float dt)
 {
-    if (pbody.lock() == nullptr)
+    if (pbody.expired())
     {
         associated.RequestDelete();
         return;
     }
     
     // Updates position
-    associated.box.SetVec(pbody.lock()->box.GetCenter() - Vec2(associated.box.w / 2, associated.box.h / 2));
+    if (!pbody.expired())
+        associated.box.SetVec(pbody.lock()->box.GetCenter() - Vec2(associated.box.w / 2, associated.box.h / 2));
 
     // Updates rotation
     Vec2 pos = Vec2(InputManager::GetInstance().GetMouseX(), InputManager::GetInstance().GetMouseY()) + Camera::pos;
@@ -52,7 +53,7 @@ bool PenguinCannon::Is(const char* type)
 
 void PenguinCannon::NotifyCollision(GameObject& other)
 {
-    pbody.lock()->NotifyCollision(other);
+    if (!pbody.expired()) pbody.lock()->NotifyCollision(other);
 }
 
 void PenguinCannon::Shoot()
@@ -60,7 +61,7 @@ void PenguinCannon::Shoot()
     if (timer.Get() < 0.40)
         return;
 
-    float speed = 100;
+    float speed = 700;
     float damage = 10;
     float maxDistance = 1000;
 
@@ -68,18 +69,12 @@ void PenguinCannon::Shoot()
     Bullet* bullet = new Bullet(*bulletGo, angle - (M_PI / 4.0), speed, damage, maxDistance, "./assets/image/penguinbullet.png", 4, 0.5, false);
     
     Vec2 center = associated.box.GetCenter();
-    Vec2 offset = bulletGo->box.GetCenter() - Vec2(65, 0).GetRotated(angle);
+    Vec2 offset = Vec2(bulletGo->box.w / 2.0, bulletGo->box.h / 2.0) - Vec2(associated.box.w / 2.0, 0).GetRotated(angle);
     
     bulletGo->box.SetVec(center - offset);
     bulletGo->AddComponent(bullet);
 
-    Game::GetInstance().GetState().AddObject(bulletGo);
+    Game::GetInstance().GetCurrentState().AddObject(bulletGo);
 
     timer.Restart();
-
-    // @TODO: big fix
-    // cout << "PCANNON CENTER:" << associated.box.GetCenter().x << "," << associated.box.GetCenter().y << endl;
-    // cout << "PCANNON POS:" << associated.box.x << "," << associated.box.y << endl;
-    // cout << "BULLET CENTER: " << bulletGo->box.GetCenter().x << "," << bulletGo->box.GetCenter().y << endl;
-    // cout << "BULLET POS: " << bulletGo->box.x << "," << bulletGo->box.y << endl;
 }

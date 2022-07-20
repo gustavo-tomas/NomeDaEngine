@@ -8,10 +8,11 @@
 #include "../header/Bullet.h"
 #include "../header/Sound.h"
 #include "../header/PenguinBody.h"
+#include "../header/GameData.h"
 
 int Alien::alienCount = 0;
 
-Alien::Alien(GameObject& associated, int nMinions) : Component(associated)
+Alien::Alien(GameObject& associated, int nMinions, float timeOffset) : Component(associated)
 {
     Sprite* sprite = new Sprite(associated, "./assets/image/alien.png");
     associated.AddComponent(sprite);
@@ -23,12 +24,13 @@ Alien::Alien(GameObject& associated, int nMinions) : Component(associated)
     hp = 20;
     alienCount++;
     state = AlienState::RESTING;
+    this->timeOffset = timeOffset;
     this->nMinions = nMinions;
 }
 
 void Alien::Start()
 {
-    State& state = Game::GetInstance().GetState();
+    State& state = Game::GetInstance().GetCurrentState();
     auto alienPtr = state.GetObjectPtr(&associated); 
     float arcOffSet = (2.0 * M_PI) / nMinions;
 
@@ -67,7 +69,7 @@ void Alien::NotifyCollision(GameObject& other)
             alienDeathSound->Play();
             alienDeathGo->AddComponent(alienDeathSound);
 
-            Game::GetInstance().GetState().AddObject(alienDeathGo);
+            Game::GetInstance().GetCurrentState().AddObject(alienDeathGo);
         }
     }
 }
@@ -86,12 +88,12 @@ void Alien::Update(float dt)
     if (state == AlienState::RESTING)
     {
         restTimer.Update(dt);
-        if (restTimer.Get() >= 1.5)
+        if (restTimer.Get() >= 1.5 + timeOffset)
         {
             if (PenguinBody::player == nullptr)
                 return;
             
-            destination = Camera::pos + Vec2(512, 300); // Big brain time
+            destination = Camera::pos + Vec2(GameData::WIDTH / 2.0, GameData::HEIGHT / 2.0); // Big brain time
             Vec2 alienPos = associated.box.GetCenter();
             float angle = alienPos.GetAngle(destination) - (M_PI / 4.0);
             speed = Vec2(400, 400).GetRotated(angle);
@@ -106,12 +108,10 @@ void Alien::Update(float dt)
         Vec2 alienPos = associated.box.GetCenter();
         float dist = alienPos.GetDistance(destination);
 
-        Vec2 newPos = alienPos + (speed * dt);
-        float newDist = newPos.GetDistance(destination);
-
-        // Moving to destination 
-        if (dist >= abs(dist - newDist))
-            associated.box.SetVec(associated.box.GetVec() + (speed * dt));
+        // Moving to destination
+        Vec2 deltaS = (speed * dt);
+        if (dist >= deltaS.GetMagnitude())
+            associated.box.SetVec(associated.box.GetVec() + deltaS);
 
         // Finish moving and start blasting
         else
@@ -120,7 +120,7 @@ void Alien::Update(float dt)
                 return;
             
             speed = Vec2(0, 0);
-            destination = Camera::pos + Vec2(512, 300); // Big brain time
+            destination = Camera::pos + Vec2(GameData::WIDTH / 2.0, GameData::HEIGHT / 2.0); // Big brain time
             if (minionArray.size() > 0)
             {
                 // Get minion closest to pos
@@ -128,15 +128,20 @@ void Alien::Update(float dt)
                 float shortestDist = 1000000;
                 for (unsigned int i = 0; i < minionArray.size(); i++)
                 {
-                    float dist = minionArray[i].lock()->box.GetCenter().GetDistance(destination);
-                    shortestDist = min(shortestDist, dist);
-                    if (shortestDist == dist)
-                        idx = i;
+                    if (!minionArray[i].expired())
+                    {
+                        float dist = minionArray[i].lock()->box.GetCenter().GetDistance(destination);
+                        shortestDist = min(shortestDist, dist);
+                        if (shortestDist == dist)
+                            idx = i;
+                    }
                 }
-                auto minion = (Minion*) minionArray[idx].lock()->GetComponent("Minion");
-                auto target = destination;
-                
-                minion->Shoot(target);
+                if (!minionArray[idx].expired())
+                {
+                    auto minion = (Minion*) minionArray[idx].lock()->GetComponent("Minion");
+                    auto target = destination;
+                    minion->Shoot(target);
+                }
             }
             state = AlienState::RESTING;
             restTimer.Restart();

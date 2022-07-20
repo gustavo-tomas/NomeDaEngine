@@ -1,9 +1,7 @@
 #include "../header/Game.h"
 #include "../header/InputManager.h"
-
-const int WIDTH = 1024;
-const int HEIGHT = 600;
-const char* TITLE = "Gustavo Tomas de Paula - 190014148";
+#include "../header/GameData.h"
+#include "../header/CameraFollower.h"
 
 Game* Game::instance = nullptr;
 
@@ -29,6 +27,14 @@ Game::Game(const char* title, int width, int height)
     if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) == 0)
     {
         cout << "Error initializing IMG" << endl;
+        cout << SDL_GetError() << endl;
+        exit(1);
+    }
+
+    // Initializes TTF
+    if (TTF_Init() != 0)
+    {
+        cout << "Error initializing TTF" << endl;
         cout << SDL_GetError() << endl;
         exit(1);
     }
@@ -85,7 +91,19 @@ Game::Game(const char* title, int width, int height)
     srand(time(NULL));
 
     // Creates state
-    state = new State();
+    storedState = nullptr;
+}
+
+void Game::UpdateDelay(Uint64 start, Uint64 end)
+{
+    float elapsed = (end - start) / (float) SDL_GetPerformanceFrequency();
+    GameData::delay = (1000.0f / GameData::targetFPS) - (elapsed * 1000.0f);
+}
+
+void Game::UpdateFPS(Uint64 start, Uint64 end)
+{
+    float elapsed = (end - start) / (float) SDL_GetPerformanceFrequency();
+    GameData::currentFPS = 1.0f / elapsed;
 }
 
 void Game::CalculateDeltaTime()
@@ -102,14 +120,9 @@ float Game::GetDeltaTime()
 Game& Game::GetInstance()
 {
     if (instance == nullptr)
-        instance = new Game(TITLE, WIDTH, HEIGHT);
+        instance = new Game(GameData::TITLE, GameData::WIDTH, GameData::HEIGHT);
 
     return *instance;
-}
-
-State& Game::GetState()
-{
-    return *state;
 }
 
 SDL_Renderer* Game::GetRenderer()
@@ -117,38 +130,88 @@ SDL_Renderer* Game::GetRenderer()
     return renderer;
 }
 
+State& Game::GetCurrentState()
+{
+    return *(stateStack.top());
+}
+
+void Game::Push(State* state)
+{
+    storedState = state;
+}
+
 void Game::Run()
 {
-    // Run the engine
-    state->Start();
-    while (state->QuitRequested() == false)
+    if (storedState == nullptr)
     {
-        CalculateDeltaTime();
-        InputManager::GetInstance().Update();
-        state->Update(dt);
-        state->Render();
-
-        SDL_RenderPresent(renderer);
-        SDL_Delay(33); // 30 FPS
+        delete this;
+        return;
     }
 
-    // Free resources 
-    Resources::ClearImages();
-    Resources::ClearMusics();
-    Resources::ClearSounds();
+    stateStack.push(unique_ptr<State>(storedState));
+    stateStack.top()->Start();
+    storedState = nullptr;
+
+    while (!stateStack.empty() && !stateStack.top()->QuitRequested())
+    {
+        Uint64 start = SDL_GetPerformanceCounter();
+
+        if (stateStack.top()->PopRequested())
+        {
+            stateStack.pop();
+            if (!stateStack.empty())
+                stateStack.top()->Resume();
+        }
+        
+        if (storedState != nullptr)
+        {
+            stateStack.top()->Pause();
+            stateStack.push(unique_ptr<State>(storedState));
+            stateStack.top()->Start();
+            storedState = nullptr;
+        }
+        
+        CalculateDeltaTime();
+        InputManager::GetInstance().Update();
+        stateStack.top()->Update(dt);
+        stateStack.top()->Render();
+
+        SDL_RenderPresent(renderer);
+
+        Uint64 end = SDL_GetPerformanceCounter();
+        UpdateDelay(start, end);
+    
+        if (GameData::delay > 0.0) SDL_Delay(GameData::delay);
+        UpdateFPS(start, SDL_GetPerformanceCounter());
+    }
+
+    // Clear the stack
+    while (!stateStack.empty())
+        stateStack.pop();    
     
     delete this;
 }
 
 Game::~Game()
 {
-    delete state;
+    // Free resources
+    Resources::ClearImages();
+    Resources::ClearMusics();
+    Resources::ClearSounds();
+    Resources::ClearFonts();
+
+    if (storedState != nullptr)
+        delete storedState;
+
+    while (!stateStack.empty())
+        stateStack.pop();
     
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     
     Mix_CloseAudio();
     Mix_Quit();
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 

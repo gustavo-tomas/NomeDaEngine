@@ -12,7 +12,7 @@ using namespace std;
 
 class Alien : public Component {
     public:
-        Alien(GameObject& associated, int nMinions);
+        Alien(GameObject& associated, int nMinions, float timeOffset = 0);
         ~Alien();
         void Start();
         void Update(float dt);
@@ -32,6 +32,7 @@ class Alien : public Component {
         Vec2 speed;
         int hp;
         int nMinions;
+        float timeOffset;
         vector<weak_ptr<GameObject>> minionArray;
 };
 

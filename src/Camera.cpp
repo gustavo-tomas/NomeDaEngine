@@ -1,5 +1,6 @@
 #include "../header/Camera.h"
 #include "../header/InputManager.h"
+#include "../header/GameData.h"
 
 GameObject* Camera::focus = nullptr;
 Vec2 Camera::pos = Vec2(0, 0);
@@ -18,7 +19,7 @@ void Camera::Unfollow()
 void Camera::Update(float dt)
 {
     if (focus != nullptr)
-        pos = focus->box.GetCenter() - Vec2(512, 300);
+        pos = focus->box.GetCenter() - Vec2(GameData::WIDTH / 2.0, GameData::HEIGHT / 2.0);
 
     else
     {

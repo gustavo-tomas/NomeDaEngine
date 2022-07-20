@@ -1,8 +1,6 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include "Sprite.h"
-#include "Music.h"
 #include "GameObject.h"
 #include <vector>
 #include <memory>
@@ -12,19 +10,25 @@ using namespace std;
 class State {
     public:
         State();
-        ~State();
-        void Start();
-        weak_ptr<GameObject> AddObject(GameObject* go);
-        weak_ptr<GameObject> GetObjectPtr(GameObject* go);
+        virtual ~State();
+        void virtual LoadAssets() = 0; // pure
+        void virtual Update(float dt) = 0; // pure
+        void virtual Render() = 0; // pure
+        void virtual Start() = 0; // pure
+        void virtual Pause() = 0; // pure
+        void virtual Resume() = 0; // pure
+        virtual weak_ptr<GameObject> AddObject(GameObject* object);
+        virtual weak_ptr<GameObject> GetObjectPtr(GameObject* object);
+        bool PopRequested();
         bool QuitRequested();
-        void LoadAssets();
-        void Update(float dt);
-        void Render();
 
-    private:
-        Music music;
-        bool started;
+    protected:
+        void StartArray();
+        virtual void UpdateArray(float dt);
+        virtual void RenderArray();
+        bool popRequested;
         bool quitRequested;
+        bool started;
         vector<shared_ptr<GameObject>> objectArray;
 };
 
