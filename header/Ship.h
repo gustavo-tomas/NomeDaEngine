@@ -1,26 +1,28 @@
-#ifndef PENGUINBODY_H
-#define PENGUINBODY_H
+#ifndef SHIP_H
+#define SHIP_H
 
 #include "Component.h"
 #include "GameObject.h"
+#include "Timer.h"
 
-class PenguinBody : public Component {
+class Ship : public Component {
     public:
-        PenguinBody(GameObject& associated);
-        ~PenguinBody();
+        Ship(GameObject& associated);
+        ~Ship();
         void Start();
         void Update(float dt);
+        void Shoot();
         void Render();
         bool Is(const char* type);
         void NotifyCollision(GameObject& other);
-        static PenguinBody* player;
+        static Ship* player;
 
     private:
-        weak_ptr<GameObject> pcannon;
+        Timer shootTimer;
         Vec2 speed;
         float linearSpeed;
         float angle;
         int hp;
 };
 
-#endif // PENGUINBODY_H
+#endif // SHIP_H

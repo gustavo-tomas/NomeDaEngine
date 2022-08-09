@@ -10,30 +10,29 @@
 
 using namespace std;
 
-class Alien : public Component {
+class Asteroid : public Component {
     public:
-        Alien(GameObject& associated, int nMinions, float timeOffset = 0);
-        ~Alien();
+        Asteroid(GameObject& associated, float timeOffset = 0);
+        ~Asteroid();
         void Start();
         void Update(float dt);
         void Render();
         bool Is(const char* type);
         void NotifyCollision(GameObject& other);
-        static int alienCount;
+        static int asteroidCount;
 
     private:
-        enum AlienState {
+        enum AsteroidState {
             MOVING,
             RESTING
         };
-        AlienState state;
+        AsteroidState state;
         Timer restTimer;
         Vec2 destination;
         Vec2 speed;
         int hp;
-        int nMinions;
         float timeOffset;
-        vector<weak_ptr<GameObject>> minionArray;
+        float distanceLeft = 1000;
 };
 
 #endif // ALIEN_H

@@ -11,6 +11,7 @@ class Camera {
         static void Update(float dt);
         static Vec2 pos;
         static Vec2 speed;
+        static Vec2 offset;
 
     private:
         static GameObject* focus;

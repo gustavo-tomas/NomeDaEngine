@@ -1,10 +1,8 @@
 #include "../header/Bullet.h"
 #include "../header/Sprite.h"
 #include "../header/Collider.h"
-#include "../header/PenguinBody.h"
-#include "../header/PenguinCannon.h"
-#include "../header/Minion.h"
-#include "../header/Alien.h"
+#include "../header/Ship.h"
+#include "../header/Asteroid.h"
 
 Bullet::Bullet(GameObject& associated, float angle, float speed,
     int damage, float maxDistance, const char* sprite,
@@ -54,17 +52,15 @@ bool Bullet::Is(const char* type)
 void Bullet::NotifyCollision(GameObject& other)
 {
     // Minion bullet hit a player
-    if (targetsPlayer &&
-        ((PenguinBody*) other.GetComponent("PenguinBody") != nullptr ||
-        (PenguinCannon*) other.GetComponent("PenguinCannon") != nullptr))
+    if (targetsPlayer && (Ship*) other.GetComponent("Ship") != nullptr)
     {
         distanceLeft = 0;
         associated.RequestDelete();
     }
 
-    // Player bullet hit an Alien
+    // Player bullet hit an Asteroid
     else if (!targetsPlayer &&
-        (Alien*) other.GetComponent("Alien") != nullptr)
+        (Asteroid*) other.GetComponent("Asteroid") != nullptr)
     {
         distanceLeft = 0;
         associated.RequestDelete();

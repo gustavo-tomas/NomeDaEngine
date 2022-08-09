@@ -1,23 +1,25 @@
-#include "../header/PenguinBody.h"
+#include "../header/Ship.h"
 #include "../header/Sprite.h"
-#include "../header/PenguinCannon.h"
 #include "../header/Game.h"
 #include "../header/InputManager.h"
 #include "../header/Collider.h"
 #include "../header/Bullet.h"
 #include "../header/Camera.h"
 #include "../header/Sound.h"
+#include "../header/Collision.h"
+#include "../header/GameData.h"
+#include "../header/Asteroid.h"
 
-PenguinBody* PenguinBody::player;
+Ship* Ship::player;
 
-PenguinBody::PenguinBody(GameObject& associated) : Component(associated)
+Ship::Ship(GameObject& associated) : Component(associated)
 {
     speed = Vec2(0, 0);
     linearSpeed = 0;
     angle = 0;
     hp = 100;
     
-    Sprite* sprite = new Sprite(associated, "./assets/image/penguin.png");
+    Sprite* sprite = new Sprite(associated, "./assets/image/ship.png");
     associated.AddComponent(sprite);
 
     Collider* collider = new Collider(associated);
@@ -26,44 +28,32 @@ PenguinBody::PenguinBody(GameObject& associated) : Component(associated)
     player = this;
 }
 
-PenguinBody::~PenguinBody()
+Ship::~Ship()
 {
     player = nullptr;
 }
 
-void PenguinBody::Start()
+void Ship::Start()
 {
-    State& state = Game::GetInstance().GetCurrentState();
     
-    GameObject* pcannonGo = new GameObject();
-    PenguinCannon* pCannon = new PenguinCannon(*pcannonGo, state.GetObjectPtr(&associated));
-    
-    pcannonGo->box.SetVec(associated.box.GetCenter() - pcannonGo->box.GetCenter());
-    pcannonGo->AddComponent(pCannon);
-
-    weak_ptr<GameObject> pcannonPtr = state.AddObject(pcannonGo);
-    this->pcannon = pcannonPtr;
 }
 
-void PenguinBody::Update(float dt)
+void Ship::Update(float dt)
 {
     if (hp <= 0)
     {
         associated.RequestDelete();
-        if (!pcannon.expired()) pcannon.lock()->RequestDelete();
         return;
     }
 
-    // Shoot
-    if (InputManager::GetInstance().IsMouseDown(LEFT_MOUSE_BUTTON) && !pcannon.expired())
-    {
-        PenguinCannon* pCannon = (PenguinCannon*) pcannon.lock()->GetComponent("PenguinCannon");
-        pCannon->Shoot();
-    }
+    // Shoots
+    shootTimer.Update(dt);
+    if (InputManager::GetInstance().IsKeyDown(SPACE_KEY) && shootTimer.Get() >= 0.40)
+        Shoot();
 
-    float acc = 500.0;
-    float dec = 300.0;
-    float maxSpeed = 550.0;
+    float acc = 700.0;
+    float dec = 700.0;
+    float maxSpeed = 200.0;
 
     // Accelerates
     if (InputManager::GetInstance().IsKeyDown(W_KEY))
@@ -102,23 +92,43 @@ void PenguinBody::Update(float dt)
     associated.box.y = max(0.f, associated.box.y);
 }
 
-void PenguinBody::Render()
+void Ship::Shoot()
+{
+    float speed = 700;
+    float damage = 10;
+    float maxDistance = 1000;
+
+    GameObject* bulletGo = new GameObject();
+    Bullet* bullet = new Bullet(*bulletGo, angle - (M_PI / 4.0), speed, damage, maxDistance, "./assets/image/penguinbullet.png", 4, 0.5, false);
+    
+    Vec2 center = associated.box.GetCenter();
+    Vec2 offset = Vec2(bulletGo->box.w / 2.0, bulletGo->box.h / 2.0) - Vec2(associated.box.w / 2.0, 0).GetRotated(angle);
+    
+    bulletGo->box.SetVec(center - offset);
+    bulletGo->AddComponent(bullet);
+
+    Game::GetInstance().GetCurrentState().AddObject(bulletGo);
+
+    shootTimer.Restart();
+}
+
+void Ship::Render()
 {
 
 }
 
-bool PenguinBody::Is(const char* type)
+bool Ship::Is(const char* type)
 {
     string str_type = type;
-    return str_type == "PenguinBody";
+    return str_type == "Ship";
 }
 
-void PenguinBody::NotifyCollision(GameObject& other)
+void Ship::NotifyCollision(GameObject& other)
 {
-    Bullet* bullet = (Bullet*) other.GetComponent("Bullet");
-    if (bullet != nullptr && bullet->targetsPlayer)
+    Asteroid* bullet = (Asteroid*) other.GetComponent("Asteroid");
+    if (bullet != nullptr)
     {
-        hp -= bullet->GetDamage();
+        hp -= 10;
         if (hp <= 0)
         {
             Camera::Unfollow();

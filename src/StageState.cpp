@@ -7,8 +7,8 @@
 #include "../header/InputManager.h"
 #include "../header/Camera.h"
 #include "../header/CameraFollower.h"
-#include "../header/Alien.h"
-#include "../header/PenguinBody.h"
+#include "../header/Asteroid.h"
+#include "../header/Ship.h"
 #include "../header/Collider.h"
 #include "../header/Collision.h"
 #include "../header/GameData.h"
@@ -45,38 +45,16 @@ void StageState::LoadAssets()
 
     // Background
     GameObject* bgGo = new GameObject();
-    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.png");
+    Sprite* bg = new Sprite(*bgGo, "./assets/image/background.png");
     CameraFollower* cf = new CameraFollower(*bgGo);
 
     bgGo->AddComponent(bg);
     bgGo->AddComponent(cf);
     AddObject(bgGo);
 
-    // Tileset & Tilemap
-    GameObject* tileGo = new GameObject();
-    TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png");
-    TileMap* tileMap = new TileMap(*tileGo, "./assets/map/tileMap.txt", tileSet);
-    
-    tileGo->box.SetVec(Vec2(0, 0));
-
-    tileGo->AddComponent(tileMap);
-    AddObject(tileGo);
-
-    // Aliens
-    for (int i = 0; i < 5; i++)
-    {
-        GameObject* alienGo = new GameObject();
-        Alien* alien = new Alien(*alienGo, 1 + (rand() % 9), rand() % 7);
-
-        alienGo->box.SetVec(Vec2(rand() % 1408, rand() % 1280));
-
-        alienGo->AddComponent(alien);
-        AddObject(alienGo);
-    }
-
     // Penguin
     GameObject* penguinBodyGo = new GameObject();
-    PenguinBody* penguinBody = new PenguinBody(*penguinBodyGo);
+    Ship* penguinBody = new Ship(*penguinBodyGo);
     
     penguinBodyGo->box.SetVec(Vec2(704, 640));
     
@@ -85,6 +63,18 @@ void StageState::LoadAssets()
 
     // Camera
     Camera::Follow(penguinBodyGo);
+
+    // Asteroids
+    for (int i = 0; i < 5; i++)
+    {
+        GameObject* asteroidGo = new GameObject();
+        Asteroid* asteroid = new Asteroid(*asteroidGo);
+
+        asteroidGo->box.SetVec(Vec2(rand() % 1408, rand() % 1280));
+
+        asteroidGo->AddComponent(asteroid);
+        AddObject(asteroidGo);
+    }
 
     // FPS counter
     GameObject* textGo = new GameObject();
@@ -120,15 +110,15 @@ void StageState::Update(float dt)
         popRequested = true;
 
     // Player is dead
-    if (PenguinBody::player == nullptr && !QuitRequested())
+    if (Ship::player == nullptr && !QuitRequested())
     {
         GameData::playerVictory = false;
         Game::GetInstance().Push(new EndState());
         popRequested = true;
     }
 
-    // Aliens are dead
-    else if (Alien::alienCount <= 0 && !QuitRequested())
+    // Asteroids are dead
+    else if (Asteroid::asteroidCount <= 0 && !QuitRequested())
     {
         GameData::playerVictory = true;
         Game::GetInstance().Push(new EndState());
