@@ -20,6 +20,7 @@ class Asteroid : public Component {
         bool Is(const char* type);
         void NotifyCollision(GameObject& other);
         static int asteroidCount;
+        const static int maxAsteroidCount;
 
     private:
         enum AsteroidState {
@@ -32,7 +33,7 @@ class Asteroid : public Component {
         Vec2 speed;
         int hp;
         float timeOffset;
-        float distanceLeft = 1000;
+        float distanceLeft = 2000;
 };
 
 #endif // ALIEN_H

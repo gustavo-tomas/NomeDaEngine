@@ -19,6 +19,7 @@ class Ship : public Component {
 
     private:
         Timer shootTimer;
+        Timer invincibleTimer;
         Vec2 speed;
         float linearSpeed;
         float angle;

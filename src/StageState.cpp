@@ -65,12 +65,12 @@ void StageState::LoadAssets()
     Camera::Follow(penguinBodyGo);
 
     // Asteroids
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < Asteroid::maxAsteroidCount; i++)
     {
         GameObject* asteroidGo = new GameObject();
         Asteroid* asteroid = new Asteroid(*asteroidGo);
 
-        asteroidGo->box.SetVec(Vec2(rand() % 1408, rand() % 1280));
+        asteroidGo->box.SetVec(Vec2(rand() % GameData::WIDTH * 2, rand() % GameData::HEIGHT * 2));
 
         asteroidGo->AddComponent(asteroid);
         AddObject(asteroidGo);
@@ -117,12 +117,16 @@ void StageState::Update(float dt)
         popRequested = true;
     }
 
-    // Asteroids are dead
-    else if (Asteroid::asteroidCount <= 0 && !QuitRequested())
+    // Create Asteroids if not at maximum capacity
+    if (Asteroid::asteroidCount < Asteroid::maxAsteroidCount)
     {
-        GameData::playerVictory = true;
-        Game::GetInstance().Push(new EndState());
-        popRequested = true;
+        GameObject* asteroidGo = new GameObject();
+        Asteroid* asteroid = new Asteroid(*asteroidGo);
+
+        asteroidGo->box.SetVec(Vec2(rand() % GameData::WIDTH, rand() % GameData::HEIGHT));
+
+        asteroidGo->AddComponent(asteroid);
+        AddObject(asteroidGo);
     }
 
     // Updates GOs
@@ -137,7 +141,7 @@ void StageState::Update(float dt)
         // Updates FPS counter - Turning into a component might be better 
         Text* FPS_Text = (Text*) objectArray[i]->GetComponent("Text");
         if (FPS_Text != nullptr)
-            FPS_Text->SetText(("FPS " + to_string(floor(GameData::currentFPS))).c_str());
+            FPS_Text->SetText(("FPS " + to_string(int(GameData::currentFPS))).c_str());
 
         // Checks for colisions
         else

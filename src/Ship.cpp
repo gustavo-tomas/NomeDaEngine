@@ -46,13 +46,16 @@ void Ship::Update(float dt)
         return;
     }
 
-    // Shoots
+    // Updates timers
     shootTimer.Update(dt);
+    invincibleTimer.Update(dt);
+
+    // Shoots
     if (InputManager::GetInstance().IsKeyDown(SPACE_KEY) && shootTimer.Get() >= 0.40)
         Shoot();
 
     float acc = 700.0;
-    float dec = 700.0;
+    float dec = 50.0;
     float maxSpeed = 200.0;
 
     // Accelerates
@@ -65,11 +68,11 @@ void Ship::Update(float dt)
 
     // Turns Right
     if (InputManager::GetInstance().IsKeyDown(D_KEY))
-        angle += 2.5 * dt;
+        angle += 4.5 * dt;
 
     // Turns Left
     if (InputManager::GetInstance().IsKeyDown(A_KEY))
-        angle -= 2.5 * dt;
+        angle -= 4.5 * dt;
 
     // Comes to a halt
     if (!InputManager::GetInstance().IsKeyDown(W_KEY) &&
@@ -125,8 +128,8 @@ bool Ship::Is(const char* type)
 
 void Ship::NotifyCollision(GameObject& other)
 {
-    Asteroid* bullet = (Asteroid*) other.GetComponent("Asteroid");
-    if (bullet != nullptr)
+    Asteroid* asteroid = (Asteroid*) other.GetComponent("Asteroid");
+    if (asteroid != nullptr && invincibleTimer.Get() > 2.0)
     {
         hp -= 10;
         if (hp <= 0)
@@ -145,6 +148,7 @@ void Ship::NotifyCollision(GameObject& other)
 
             Game::GetInstance().GetCurrentState().AddObject(penguinDeathGo);
         }
-        cout << "PENGUIN HP: " << hp << endl;
+        cout << "SHIP HP: " << hp << endl;
+        invincibleTimer.Restart();
     }
 }

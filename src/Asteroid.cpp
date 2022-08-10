@@ -10,6 +10,7 @@
 #include "../header/GameData.h"
 
 int Asteroid::asteroidCount = 0;
+const int Asteroid::maxAsteroidCount = 30;
 
 Asteroid::Asteroid(GameObject& associated, float timeOffset) : Component(associated)
 {
