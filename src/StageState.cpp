@@ -90,7 +90,7 @@ void StageState::LoadAssets()
     CameraFollower* textFollower = new CameraFollower(*textGo, textGo->box.GetVec());
     textGo->AddComponent(textFollower);
 
-    Text* fpsText = new Text(*textGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "FPS ", {212, 15, 15, 255});
+    Text* fpsText = new Text(*textGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "FPS ", {255, 255, 255, 255});
     textGo->AddComponent(fpsText);
     
     AddObject(textGo);
@@ -102,7 +102,7 @@ void StageState::LoadAssets()
     CameraFollower* scoreFollower = new CameraFollower(*scoreGo, scoreGo->box.GetVec());
     scoreGo->AddComponent(scoreFollower);
 
-    Text* scoreText = new Text(*scoreGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "Score 0", {212, 15, 15, 255});
+    Text* scoreText = new Text(*scoreGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "Score 0", {255, 255, 255, 255});
     scoreGo->AddComponent(scoreText);
     
     AddObject(scoreGo);
@@ -114,7 +114,7 @@ void StageState::LoadAssets()
     CameraFollower* livesFollower = new CameraFollower(*livesGo, livesGo->box.GetVec());
     livesGo->AddComponent(livesFollower);
 
-    Text* livesText = new Text(*livesGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "Lives ", {212, 15, 15, 255});
+    Text* livesText = new Text(*livesGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "Lives ", {255, 255, 255, 255});
     livesGo->AddComponent(livesText);
     
     AddObject(livesGo);
