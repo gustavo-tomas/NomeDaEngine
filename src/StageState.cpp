@@ -37,6 +37,23 @@ void StageState::Resume()
     
 }
 
+void StageState::AddAsteroid()
+{
+    // Scale varies from [0.35, 0.5]
+    float scale = 0.35 + ((rand() % 151) / 1000.f);
+    int negative = rand() % 2;
+    float rotation = M_PI / (7.0 + ((rand() % 900) / 1000.f));
+    if (negative) rotation *= -1;
+
+    GameObject* asteroidGo = new GameObject();
+    Asteroid* asteroid = new Asteroid(*asteroidGo, 0.0, Vec2(scale, scale), rotation);
+
+    asteroidGo->box.SetVec(Vec2(rand() % GameData::WIDTH * 3, rand() % GameData::HEIGHT * 3));
+
+    asteroidGo->AddComponent(asteroid);
+    AddObject(asteroidGo);
+}
+
 void StageState::LoadAssets()
 {
     // Background Music
@@ -66,31 +83,41 @@ void StageState::LoadAssets()
 
     // Asteroids
     for (int i = 0; i < Asteroid::maxAsteroidCount; i++)
-    {
-        GameObject* asteroidGo = new GameObject();
-        Asteroid* asteroid = new Asteroid(*asteroidGo);
-
-        asteroidGo->box.SetVec(Vec2(rand() % GameData::WIDTH * 2, rand() % GameData::HEIGHT * 2));
-
-        asteroidGo->AddComponent(asteroid);
-        AddObject(asteroidGo);
-    }
+        AddAsteroid();
 
     // FPS counter
     GameObject* textGo = new GameObject();
     CameraFollower* textFollower = new CameraFollower(*textGo, textGo->box.GetVec());
     textGo->AddComponent(textFollower);
 
-    const char* fontFile = "./assets/font/call_me_maybe.ttf";
-    const char* textStr = "FPS ";
-    int fontSize = 16;
-    Text::TextStyle style = Text::BLENDED;
-    SDL_Color color = {212, 15, 15, 255};
-    
-    Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color);
-    textGo->AddComponent(text);
+    Text* fpsText = new Text(*textGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "FPS ", {212, 15, 15, 255});
+    textGo->AddComponent(fpsText);
     
     AddObject(textGo);
+
+    // Score
+    GameObject* scoreGo = new GameObject();
+    scoreGo->box.SetVec(Vec2(0, 16));
+    
+    CameraFollower* scoreFollower = new CameraFollower(*scoreGo, scoreGo->box.GetVec());
+    scoreGo->AddComponent(scoreFollower);
+
+    Text* scoreText = new Text(*scoreGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "Score 0", {212, 15, 15, 255});
+    scoreGo->AddComponent(scoreText);
+    
+    AddObject(scoreGo);
+
+    // Lives
+    GameObject* livesGo = new GameObject();
+    livesGo->box.SetVec(Vec2(0, 32));
+    
+    CameraFollower* livesFollower = new CameraFollower(*livesGo, livesGo->box.GetVec());
+    livesGo->AddComponent(livesFollower);
+
+    Text* livesText = new Text(*livesGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "Lives ", {212, 15, 15, 255});
+    livesGo->AddComponent(livesText);
+    
+    AddObject(livesGo);
 }
 
 void StageState::Update(float dt)
@@ -112,36 +139,39 @@ void StageState::Update(float dt)
     // Player is dead
     if (Ship::player == nullptr && !QuitRequested())
     {
-        GameData::playerVictory = false;
-        Game::GetInstance().Push(new EndState());
-        popRequested = true;
+        quitTimer.Update(dt);
+        if (quitTimer.Get() > 3.0)
+        {
+            GameData::playerVictory = false;
+            Game::GetInstance().Push(new EndState());
+            popRequested = true;
+        }
     }
 
     // Create Asteroids if not at maximum capacity
     if (Asteroid::asteroidCount < Asteroid::maxAsteroidCount)
-    {
-        GameObject* asteroidGo = new GameObject();
-        Asteroid* asteroid = new Asteroid(*asteroidGo);
-
-        asteroidGo->box.SetVec(Vec2(rand() % GameData::WIDTH, rand() % GameData::HEIGHT));
-
-        asteroidGo->AddComponent(asteroid);
-        AddObject(asteroidGo);
-    }
+        AddAsteroid();
 
     // Updates GOs
     UpdateArray(dt);
 
     for (unsigned long i = 0; i < objectArray.size(); i++)
     {
+        // Updates Text - Turning into a component might be better 
+        Text* text = (Text*) objectArray[i]->GetComponent("Text");
+        if (text != nullptr) // Quickfix for selecting text
+        {
+            if (text->GetText()[0] == 'F') // FPS counter
+                text->SetText(("FPS " + to_string(int(GameData::currentFPS))).c_str());
+            else if (text->GetText()[0] == 'S') // Score counter
+                text->SetText(("Score " + to_string(GameData::score)).c_str());
+            else if (text->GetText()[0] == 'L') // Lives counter
+                text->SetText(("Lives " + to_string(GameData::playerLives)).c_str());
+        }
+        
         // Deletes GOs
         if (objectArray[i]->IsDead())
             objectArray.erase(objectArray.begin() + i);
-
-        // Updates FPS counter - Turning into a component might be better 
-        Text* FPS_Text = (Text*) objectArray[i]->GetComponent("Text");
-        if (FPS_Text != nullptr)
-            FPS_Text->SetText(("FPS " + to_string(int(GameData::currentFPS))).c_str());
 
         // Checks for colisions
         else

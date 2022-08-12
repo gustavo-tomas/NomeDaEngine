@@ -10,21 +10,24 @@
 #include "../header/GameData.h"
 
 int Asteroid::asteroidCount = 0;
-const int Asteroid::maxAsteroidCount = 30;
+const int Asteroid::maxAsteroidCount = 50;
 
-Asteroid::Asteroid(GameObject& associated, float timeOffset) : Component(associated)
+Asteroid::Asteroid(GameObject& associated, float timeOffset, Vec2 scale, float rotation) : Component(associated)
 {
     Sprite* sprite = new Sprite(associated, "./assets/image/asteroid.png");
+    sprite->SetScale(scale.x, scale.y);
     associated.AddComponent(sprite);
     
     Collider* collider = new Collider(associated);
     associated.AddComponent(collider);
 
     speed = Vec2(0, 0);
-    hp = 20;
+    hp = 10;
     asteroidCount++;
     state = AsteroidState::RESTING;
+    this->scale = scale;
     this->timeOffset = timeOffset;
+    this->rotation = rotation;
 }
 
 void Asteroid::Start()
@@ -46,16 +49,18 @@ void Asteroid::NotifyCollision(GameObject& other)
         if (hp <= 0)
         {
             GameObject* asteroidDeathGo = new GameObject();
-            asteroidDeathGo->box = associated.box;
 
-            Sprite* asteroidDeathSprite = new Sprite(*asteroidDeathGo, "./assets/image/aliendeath.png", 4, 0.25, 1.0);
+            Sprite* asteroidDeathSprite = new Sprite(*asteroidDeathGo, "./assets/image/explosion.png", 4, 0.25, 1.0);
+            asteroidDeathSprite->SetScale(scale.x + 0.1, scale.y + 0.1);
             asteroidDeathGo->AddComponent(asteroidDeathSprite);
+            asteroidDeathGo->box = associated.box;
             
             Sound* asteroidDeathSound = new Sound(*asteroidDeathGo, "./assets/audio/boom.wav");
             asteroidDeathSound->Play();
             asteroidDeathGo->AddComponent(asteroidDeathSound);
 
             Game::GetInstance().GetCurrentState().AddObject(asteroidDeathGo);
+            GameData::score += 100;
         }
     }
 }
@@ -68,7 +73,7 @@ void Asteroid::Update(float dt)
         return;
     }
     
-    associated.angleDeg -= (M_PI / 10.0) * dt; // @TODO: random rotation & speed
+    associated.angleDeg -= rotation * dt;
 
     // Resting State
     if (state == AsteroidState::RESTING)
@@ -82,7 +87,7 @@ void Asteroid::Update(float dt)
             destination = Camera::pos + Vec2(GameData::WIDTH / 2.0, GameData::HEIGHT / 2.0); // Big brain time
             Vec2 asteroidPos = associated.box.GetCenter();
             float angle = asteroidPos.GetAngle(destination) - (M_PI / 4.0);
-            speed = Vec2(100, 100).GetRotated(angle);
+            speed = Vec2(rand() % 60 + 10, rand() % 60 + 10).GetRotated(angle);
             state = AsteroidState::MOVING;
         }
     }

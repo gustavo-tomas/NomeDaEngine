@@ -4,7 +4,7 @@
 #include "../header/Sprite.h"
 
 Text::Text(GameObject& associated, const char* fontFile, int fontSize,
-           TextStyle style, const char* text, SDL_Color color, float timeToBlink) : Component(associated)
+           TextStyle style, string text, SDL_Color color, float timeToBlink) : Component(associated)
 {
     this->fontFile = fontFile;
     this->fontSize = fontSize;
@@ -75,7 +75,12 @@ bool Text::Is(const char* type)
     return str_type == "Text";
 }
 
-void Text::SetText(const char* text)
+string Text::GetText()
+{
+    return this->text;
+}
+
+void Text::SetText(string text)
 {
     this->text = text;
     RemakeTexture();
@@ -112,18 +117,18 @@ void Text::RemakeTexture()
 
     font = Resources::GetFont(fontFile, fontSize);
     
-    SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), color);
     
     switch (style)
     {
         case SOLID:
-            surface = TTF_RenderText_Solid(font, text, color);
+            surface = TTF_RenderText_Solid(font, text.c_str(), color);
             break;
         case SHADED: // No support for shaded text
             // surface = TTF_RenderText_Shaded(font, text, color);
             break;
         case BLENDED:
-            surface = TTF_RenderText_Blended(font, text, color);
+            surface = TTF_RenderText_Blended(font, text.c_str(), color);
             break;
         default:
             break;

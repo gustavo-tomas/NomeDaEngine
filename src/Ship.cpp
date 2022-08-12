@@ -17,10 +17,15 @@ Ship::Ship(GameObject& associated) : Component(associated)
     speed = Vec2(0, 0);
     linearSpeed = 0;
     angle = 0;
-    hp = 100;
+    hp = 5;
+    GameData::playerLives = hp;
     
-    Sprite* sprite = new Sprite(associated, "./assets/image/ship.png");
+    Sprite* sprite = new Sprite(associated, "./assets/image/ship.png", 6);
+    sprite->SetScale(0.125, 0.125);
     associated.AddComponent(sprite);
+
+    Sound* shipDamagedSound = new Sound(associated, "./assets/audio/damage.mp3");
+    associated.AddComponent(shipDamagedSound);
 
     Collider* collider = new Collider(associated);
     associated.AddComponent(collider);
@@ -51,12 +56,39 @@ void Ship::Update(float dt)
     invincibleTimer.Update(dt);
 
     // Shoots
-    if (InputManager::GetInstance().IsKeyDown(SPACE_KEY) && shootTimer.Get() >= 0.40)
+    if (InputManager::GetInstance().IsKeyDown(SPACE_KEY) && shootTimer.Get() >= 0.30)
         Shoot();
 
     float acc = 700.0;
     float dec = 50.0;
     float maxSpeed = 200.0;
+
+    // Updates sprite
+    Sprite* sprite = (Sprite *) associated.GetComponent("Sprite");
+
+    // Forwards
+    if (sprite != nullptr && InputManager::GetInstance().IsKeyDown(W_KEY))
+        sprite->SetFrame(1);
+
+    // Backwards
+    else if (sprite != nullptr && InputManager::GetInstance().IsKeyDown(S_KEY))
+        sprite->SetFrame(4);
+
+    // Turns right
+    else if (sprite != nullptr && InputManager::GetInstance().IsKeyDown(D_KEY))
+        sprite->SetFrame(2);
+    
+    // Turns left
+    else if (sprite != nullptr && InputManager::GetInstance().IsKeyDown(A_KEY))
+        sprite->SetFrame(3);
+
+    // Idle
+    else if (sprite != nullptr)
+        sprite->SetFrame(0);
+
+    // Damaged
+    if (sprite != nullptr && invincibleTimer.Get() <= 2.0)
+        sprite->SetFrame(5);
 
     // Accelerates
     if (InputManager::GetInstance().IsKeyDown(W_KEY))
@@ -102,7 +134,7 @@ void Ship::Shoot()
     float maxDistance = 1000;
 
     GameObject* bulletGo = new GameObject();
-    Bullet* bullet = new Bullet(*bulletGo, angle - (M_PI / 4.0), speed, damage, maxDistance, "./assets/image/penguinbullet.png", 4, 0.5, false);
+    Bullet* bullet = new Bullet(*bulletGo, angle - (M_PI / 4.0), speed, damage, maxDistance, "./assets/image/bullet.png", 1, 1.0, false);
     
     Vec2 center = associated.box.GetCenter();
     Vec2 offset = Vec2(bulletGo->box.w / 2.0, bulletGo->box.h / 2.0) - Vec2(associated.box.w / 2.0, 0).GetRotated(angle);
@@ -131,24 +163,34 @@ void Ship::NotifyCollision(GameObject& other)
     Asteroid* asteroid = (Asteroid*) other.GetComponent("Asteroid");
     if (asteroid != nullptr && invincibleTimer.Get() > 2.0)
     {
-        hp -= 10;
+        Sprite* sprite = (Sprite *) associated.GetComponent("Sprite");
+        if (sprite != nullptr) sprite->SetFrame(5);
+
+        hp -= 1;
+        GameData::playerLives = hp;
+        
+        // Damaged sfx
+        Sound* shipDamagedSound = (Sound *) associated.GetComponent("Sound");
+        if (shipDamagedSound != nullptr) shipDamagedSound->Play(1);
+
         if (hp <= 0)
         {
             Camera::Unfollow();
 
-            GameObject* penguinDeathGo = new GameObject();
-            penguinDeathGo->box = associated.box;
+            GameObject* shipDeathGo = new GameObject();
 
-            Sprite* penguinDeathSprite = new Sprite(*penguinDeathGo, "./assets/image/penguindeath.png", 5, 0.25, 1.25);
-            penguinDeathGo->AddComponent(penguinDeathSprite);
+            Sprite* shipDeathSprite = new Sprite(*shipDeathGo, "./assets/image/explosion.png", 4, 0.75, 3.0);
+            shipDeathSprite->SetScale(0.35, 0.35);
+            shipDeathGo->AddComponent(shipDeathSprite);
+            shipDeathGo->box = associated.box;
             
-            Sound* penguinDeathSound = new Sound(*penguinDeathGo, "./assets/audio/boom.wav");
-            penguinDeathSound->Play();
-            penguinDeathGo->AddComponent(penguinDeathSound);
+            Sound* shipDeathSound = new Sound(*shipDeathGo, "./assets/audio/boom.wav");
+            shipDeathSound->Play(1);
+            shipDeathGo->AddComponent(shipDeathSound);
 
-            Game::GetInstance().GetCurrentState().AddObject(penguinDeathGo);
+            Game::GetInstance().GetCurrentState().AddObject(shipDeathGo);
         }
-        cout << "SHIP HP: " << hp << endl;
+
         invincibleTimer.Restart();
     }
 }

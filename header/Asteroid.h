@@ -12,7 +12,7 @@ using namespace std;
 
 class Asteroid : public Component {
     public:
-        Asteroid(GameObject& associated, float timeOffset = 0);
+        Asteroid(GameObject& associated, float timeOffset = 0, Vec2 scale = Vec2(1.0, 1.0), float rotation = M_PI / 10.0);
         ~Asteroid();
         void Start();
         void Update(float dt);
@@ -31,8 +31,10 @@ class Asteroid : public Component {
         Timer restTimer;
         Vec2 destination;
         Vec2 speed;
+        Vec2 scale;
         int hp;
         float timeOffset;
+        float rotation;
         float distanceLeft = 2000;
 };
 

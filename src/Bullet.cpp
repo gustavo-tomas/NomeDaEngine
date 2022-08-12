@@ -10,7 +10,7 @@ Bullet::Bullet(GameObject& associated, float angle, float speed,
     : Component(associated)
 {
     Sprite* bulletSprite = new Sprite(associated, sprite, frameCount, frameTime);
-    bulletSprite->SetScale(1.2, 1.8);
+    bulletSprite->SetScale(0.1, 0.03125);
     associated.AddComponent(bulletSprite);
 
     Collider* collider = new Collider(associated);

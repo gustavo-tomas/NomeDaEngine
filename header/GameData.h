@@ -1,6 +1,8 @@
 #ifndef GAMEDATA_H
 #define GAMEDATA_H
 
+#include "Timer.h"
+
 class GameData {
     public:
         static const int WIDTH;
@@ -10,6 +12,8 @@ class GameData {
         static float targetFPS;
         static float currentFPS;
         static float delay;
+        static int score;
+        static int playerLives;
 };
 
 #endif // GAMEDATA_H

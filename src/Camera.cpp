@@ -27,7 +27,7 @@ void Camera::Update(float dt)
         // X = Xo + vo * dt + (a * dt^2) / 2
         pos = pos + (speed * dt);
         
-        float maxSpeed = 500.0;
+        float maxSpeed = 70.0;
         float incSpeed = 50.0;
         float decSpeed = 10.0;
 
