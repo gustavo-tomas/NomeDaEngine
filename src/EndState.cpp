@@ -69,9 +69,19 @@ void EndState::LoadAssets()
     Text::TextStyle style = Text::BLENDED;
     SDL_Color color = {195, 35, 35, 255};
     
-    Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color);
+    Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color, 1.0);
     textGo->AddComponent(text);
+    
+    GameObject* scoreTextGo = new GameObject();
+    scoreTextGo->box.SetVec(Vec2(25, 300));
 
+    CameraFollower* scoreTextFollower = new CameraFollower(*scoreTextGo, scoreTextGo->box.GetVec());
+    scoreTextGo->AddComponent(scoreTextFollower);
+    
+    Text* scoreText = new Text(*scoreTextGo, fontFile, fontSize, style, "score " + to_string(GameData::score), color, 1.0);
+    scoreTextGo->AddComponent(scoreText);
+
+    AddObject(scoreTextGo);
     AddObject(textGo);
 }
 
