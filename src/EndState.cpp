@@ -9,13 +9,7 @@
 EndState::EndState()
 {
     // Chooses background depending on the ending
-    const char* bgFile;
-
-    if (GameData::playerVictory)
-        bgFile = "./assets/image/win.png";
-
-    else
-        bgFile = "./assets/image/lose.png";
+    const char* bgFile = "./assets/image/end.png";
     
     GameObject* bgGo = new GameObject();
     Sprite* bg = new Sprite(*bgGo, bgFile);
@@ -59,37 +53,37 @@ void EndState::LoadAssets()
 
     // Writes text
     GameObject* textGo = new GameObject();
-    textGo->box.SetVec(Vec2(25, 350));
+    textGo->box.SetVec(Vec2(100, 450));
     CameraFollower* textFollower = new CameraFollower(*textGo, textGo->box.GetVec());
     textGo->AddComponent(textFollower);
 
     const char* fontFile = "./assets/font/call_me_maybe.ttf";
-    const char* textStr = "aperte a tecla esc para sair do jogo ou space para voltar ao inicio";
+    const char* textStr = "press esc to quit or space to go back to title";
     int fontSize = 32;
     Text::TextStyle style = Text::BLENDED;
-    SDL_Color color = {195, 35, 35, 255};
+    SDL_Color color = {255, 255, 255, 255};
     
     Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color, 1.0);
     textGo->AddComponent(text);
     
     // Score
     GameObject* scoreTextGo = new GameObject();
-    scoreTextGo->box.SetVec(Vec2(25, 300));
+    scoreTextGo->box.SetVec(Vec2(100, 400));
 
     CameraFollower* scoreTextFollower = new CameraFollower(*scoreTextGo, scoreTextGo->box.GetVec());
     scoreTextGo->AddComponent(scoreTextFollower);
     
-    Text* scoreText = new Text(*scoreTextGo, fontFile, fontSize, style, "your score " + to_string(GameData::score), color, 1.0);
+    Text* scoreText = new Text(*scoreTextGo, fontFile, fontSize, style, "your score " + to_string(GameData::score), color);
     scoreTextGo->AddComponent(scoreText);
 
     // High Score
     GameObject* highScoreTextGo = new GameObject();
-    highScoreTextGo->box.SetVec(Vec2(25, 250));
+    highScoreTextGo->box.SetVec(Vec2(100, 350));
 
     CameraFollower* highScoreTextFollower = new CameraFollower(*highScoreTextGo, highScoreTextGo->box.GetVec());
     highScoreTextGo->AddComponent(highScoreTextFollower);
     
-    Text* highScoreText = new Text(*highScoreTextGo, fontFile, fontSize, style, "Highscore " + to_string(GameData::GetHighScore().second), color, 1.0);
+    Text* highScoreText = new Text(*highScoreTextGo, fontFile, fontSize, style, "Highscore " + to_string(GameData::GetHighScore().second), color);
     highScoreTextGo->AddComponent(highScoreText);
 
     AddObject(highScoreTextGo);

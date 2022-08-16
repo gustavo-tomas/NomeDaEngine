@@ -173,8 +173,12 @@ void Game::Run()
         
         CalculateDeltaTime();
         InputManager::GetInstance().Update();
-        stateStack.top()->Update(dt);
-        stateStack.top()->Render();
+
+        if (!stateStack.empty())
+        {
+            stateStack.top()->Update(dt);
+            stateStack.top()->Render();
+        }
 
         SDL_RenderPresent(renderer);
 

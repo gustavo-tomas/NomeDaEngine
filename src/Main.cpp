@@ -1,5 +1,6 @@
 #include "../header/Game.h"
 #include "../header/TitleState.h"
+#include "../header/EndState.h"
 
 int main(int argc, char** argv)
 {
