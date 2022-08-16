@@ -40,13 +40,7 @@ void EndState::Update(float dt)
 void EndState::LoadAssets()
 {
     // Chooses music depending on the ending
-    const char* musicFile;
-
-    if (GameData::playerVictory)
-        musicFile = "./assets/audio/endStateWin.ogg";
-
-    else
-        musicFile = "./assets/audio/endStateLose.ogg";
+    const char* musicFile = "./assets/audio/endStateWin.ogg";
 
     backgroundMusic = Music(musicFile);
     backgroundMusic.Play(1);
