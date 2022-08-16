@@ -2,6 +2,10 @@
 #define GAMEDATA_H
 
 #include "Timer.h"
+#include <string>
+#include <utility>
+
+using namespace std;
 
 class GameData {
     public:
@@ -14,6 +18,9 @@ class GameData {
         static float delay;
         static int score;
         static int playerLives;
+        
+        static pair<string, int> GetHighScore();
+        static void SetHighScore(pair<string, int> score);
 };
 
 #endif // GAMEDATA_H

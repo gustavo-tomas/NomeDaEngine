@@ -2,8 +2,6 @@
 #include "../header/Game.h"
 #include "../header/Sound.h"
 #include "../header/Vec2.h"
-#include "../header/TileSet.h"
-#include "../header/TileMap.h"
 #include "../header/InputManager.h"
 #include "../header/Camera.h"
 #include "../header/CameraFollower.h"
@@ -24,6 +22,7 @@ void StageState::Start()
 {
     LoadAssets();
     StartArray();
+    GameData::score = 0;
     started = true;
 }
 
@@ -137,7 +136,7 @@ void StageState::Update(float dt)
         popRequested = true;
 
     // Player is dead
-    if (Ship::player == nullptr && !QuitRequested())
+    if (Ship::player == nullptr && !QuitRequested() && !PopRequested())
     {
         quitTimer.Update(dt);
         if (quitTimer.Get() > 3.0)
@@ -145,6 +144,10 @@ void StageState::Update(float dt)
             GameData::playerVictory = false;
             Game::GetInstance().Push(new EndState());
             popRequested = true;
+
+            pair<string, int> highScore = GameData::GetHighScore();
+            if (GameData::score > highScore.second)
+                GameData::SetHighScore(pair<string, int>("LOL", GameData::score));
         }
     }
 

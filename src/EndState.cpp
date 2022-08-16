@@ -72,15 +72,27 @@ void EndState::LoadAssets()
     Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color, 1.0);
     textGo->AddComponent(text);
     
+    // Score
     GameObject* scoreTextGo = new GameObject();
     scoreTextGo->box.SetVec(Vec2(25, 300));
 
     CameraFollower* scoreTextFollower = new CameraFollower(*scoreTextGo, scoreTextGo->box.GetVec());
     scoreTextGo->AddComponent(scoreTextFollower);
     
-    Text* scoreText = new Text(*scoreTextGo, fontFile, fontSize, style, "score " + to_string(GameData::score), color, 1.0);
+    Text* scoreText = new Text(*scoreTextGo, fontFile, fontSize, style, "your score " + to_string(GameData::score), color, 1.0);
     scoreTextGo->AddComponent(scoreText);
 
+    // High Score
+    GameObject* highScoreTextGo = new GameObject();
+    highScoreTextGo->box.SetVec(Vec2(25, 250));
+
+    CameraFollower* highScoreTextFollower = new CameraFollower(*highScoreTextGo, highScoreTextGo->box.GetVec());
+    highScoreTextGo->AddComponent(highScoreTextFollower);
+    
+    Text* highScoreText = new Text(*highScoreTextGo, fontFile, fontSize, style, "Highscore " + to_string(GameData::GetHighScore().second), color, 1.0);
+    highScoreTextGo->AddComponent(highScoreText);
+
+    AddObject(highScoreTextGo);
     AddObject(scoreTextGo);
     AddObject(textGo);
 }

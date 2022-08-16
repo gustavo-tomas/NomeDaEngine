@@ -61,6 +61,21 @@ void Asteroid::NotifyCollision(GameObject& other)
 
             Game::GetInstance().GetCurrentState().AddObject(asteroidDeathGo);
             GameData::score += 100;
+
+            // Breaks asteroid in two parts
+            if (scale.x >= 0.42)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    GameObject* asteroidGo = new GameObject();
+                    Asteroid* asteroid = new Asteroid(*asteroidGo, 0.0, scale / 2.0, rotation);
+
+                    asteroidGo->box.SetVec(associated.box.GetCenter());
+
+                    asteroidGo->AddComponent(asteroid);
+                    Game::GetInstance().GetCurrentState().AddObject(asteroidGo);
+                }
+            }
         }
     }
 }
@@ -79,7 +94,7 @@ void Asteroid::Update(float dt)
     if (state == AsteroidState::RESTING)
     {
         restTimer.Update(dt);
-        if (restTimer.Get() >= 1.5 + timeOffset)
+        if (restTimer.Get() >= timeOffset)
         {
             if (Ship::player == nullptr)
                 return;
