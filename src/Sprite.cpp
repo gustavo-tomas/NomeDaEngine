@@ -24,7 +24,7 @@ Sprite::~Sprite()
     
 }
 
-void Sprite::Open(const char* file)
+void Sprite::Open(string file)
 {
     texture = Resources::GetImage(file);
 

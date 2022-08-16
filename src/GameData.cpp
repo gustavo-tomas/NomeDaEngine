@@ -6,7 +6,7 @@
 
 const int GameData::WIDTH = 1024;
 const int GameData::HEIGHT = 600;
-const char* GameData::TITLE = "Gustavo Tomas de Paula - 190014148";
+const char* GameData::TITLE = "ASTEROIDS";
 
 bool GameData::playerVictory = false;
 float GameData::targetFPS = 60.0f;
