@@ -69,16 +69,16 @@ void StageState::LoadAssets()
     AddObject(bgGo);
 
     // Penguin
-    GameObject* penguinBodyGo = new GameObject();
-    Ship* penguinBody = new Ship(*penguinBodyGo);
+    GameObject* shipGo = new GameObject();
+    Ship* ship = new Ship(*shipGo);
     
-    penguinBodyGo->box.SetVec(Vec2(704, 640));
+    shipGo->box.SetVec(Vec2(704, 640));
     
-    penguinBodyGo->AddComponent(penguinBody);
-    AddObject(penguinBodyGo);
+    shipGo->AddComponent(ship);
+    AddObject(shipGo);
 
     // Camera
-    Camera::Follow(penguinBodyGo);
+    Camera::Follow(shipGo);
 
     // Asteroids
     for (int i = 0; i < Asteroid::maxAsteroidCount; i++)
