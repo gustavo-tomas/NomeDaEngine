@@ -9,6 +9,7 @@
 #include "Vec2.h"
 #include "Timer.h"
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -17,7 +18,7 @@ class Sprite : public Component {
         Sprite(GameObject& associated);
         Sprite(GameObject& associated, const char* file, int frameCount = 1, float frameTime = 1, float secondsToSelfDestruct = 0);
         ~Sprite();
-        void Open(const char* file);
+        void Open(string file);
         void SetClip(int x, int y, int w, int h);
         void Update(float dt);
         bool Is(const char* type);

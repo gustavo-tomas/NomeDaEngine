@@ -2,13 +2,11 @@
 #include "../header/Game.h"
 #include "../header/Sound.h"
 #include "../header/Vec2.h"
-#include "../header/TileSet.h"
-#include "../header/TileMap.h"
 #include "../header/InputManager.h"
 #include "../header/Camera.h"
 #include "../header/CameraFollower.h"
-#include "../header/Alien.h"
-#include "../header/PenguinBody.h"
+#include "../header/Asteroid.h"
+#include "../header/Ship.h"
 #include "../header/Collider.h"
 #include "../header/Collision.h"
 #include "../header/GameData.h"
@@ -24,6 +22,7 @@ void StageState::Start()
 {
     LoadAssets();
     StartArray();
+    GameData::score = 0;
     started = true;
 }
 
@@ -37,6 +36,23 @@ void StageState::Resume()
     
 }
 
+void StageState::AddAsteroid()
+{
+    // Scale varies from [0.35, 0.5]
+    float scale = 0.35 + ((rand() % 151) / 1000.f);
+    int negative = rand() % 2;
+    float rotation = M_PI / (7.0 + ((rand() % 900) / 1000.f));
+    if (negative) rotation *= -1;
+
+    GameObject* asteroidGo = new GameObject();
+    Asteroid* asteroid = new Asteroid(*asteroidGo, 0.0, Vec2(scale, scale), rotation);
+
+    asteroidGo->box.SetVec(Vec2(rand() % GameData::WIDTH * 3, rand() % GameData::HEIGHT * 3));
+
+    asteroidGo->AddComponent(asteroid);
+    AddObject(asteroidGo);
+}
+
 void StageState::LoadAssets()
 {
     // Background Music
@@ -45,62 +61,62 @@ void StageState::LoadAssets()
 
     // Background
     GameObject* bgGo = new GameObject();
-    Sprite* bg = new Sprite(*bgGo, "./assets/image/ocean.png");
+    Sprite* bg = new Sprite(*bgGo, "./assets/image/background.png");
     CameraFollower* cf = new CameraFollower(*bgGo);
 
     bgGo->AddComponent(bg);
     bgGo->AddComponent(cf);
     AddObject(bgGo);
 
-    // Tileset & Tilemap
-    GameObject* tileGo = new GameObject();
-    TileSet* tileSet = new TileSet(64, 64, "./assets/image/tileset.png");
-    TileMap* tileMap = new TileMap(*tileGo, "./assets/map/tileMap.txt", tileSet);
-    
-    tileGo->box.SetVec(Vec2(0, 0));
-
-    tileGo->AddComponent(tileMap);
-    AddObject(tileGo);
-
-    // Aliens
-    for (int i = 0; i < 5; i++)
-    {
-        GameObject* alienGo = new GameObject();
-        Alien* alien = new Alien(*alienGo, 1 + (rand() % 9), rand() % 7);
-
-        alienGo->box.SetVec(Vec2(rand() % 1408, rand() % 1280));
-
-        alienGo->AddComponent(alien);
-        AddObject(alienGo);
-    }
-
     // Penguin
-    GameObject* penguinBodyGo = new GameObject();
-    PenguinBody* penguinBody = new PenguinBody(*penguinBodyGo);
+    GameObject* shipGo = new GameObject();
+    Ship* ship = new Ship(*shipGo);
     
-    penguinBodyGo->box.SetVec(Vec2(704, 640));
+    shipGo->box.SetVec(Vec2(704, 640));
     
-    penguinBodyGo->AddComponent(penguinBody);
-    AddObject(penguinBodyGo);
+    shipGo->AddComponent(ship);
+    AddObject(shipGo);
 
     // Camera
-    Camera::Follow(penguinBodyGo);
+    Camera::Follow(shipGo);
+
+    // Asteroids
+    for (int i = 0; i < Asteroid::maxAsteroidCount; i++)
+        AddAsteroid();
 
     // FPS counter
     GameObject* textGo = new GameObject();
     CameraFollower* textFollower = new CameraFollower(*textGo, textGo->box.GetVec());
     textGo->AddComponent(textFollower);
 
-    const char* fontFile = "./assets/font/call_me_maybe.ttf";
-    const char* textStr = "FPS ";
-    int fontSize = 16;
-    Text::TextStyle style = Text::BLENDED;
-    SDL_Color color = {212, 15, 15, 255};
-    
-    Text* text = new Text(*textGo, fontFile, fontSize, style, textStr, color);
-    textGo->AddComponent(text);
+    Text* fpsText = new Text(*textGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "FPS ", {255, 255, 255, 255});
+    textGo->AddComponent(fpsText);
     
     AddObject(textGo);
+
+    // Score
+    GameObject* scoreGo = new GameObject();
+    scoreGo->box.SetVec(Vec2(0, 16));
+    
+    CameraFollower* scoreFollower = new CameraFollower(*scoreGo, scoreGo->box.GetVec());
+    scoreGo->AddComponent(scoreFollower);
+
+    Text* scoreText = new Text(*scoreGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "Score 0", {255, 255, 255, 255});
+    scoreGo->AddComponent(scoreText);
+    
+    AddObject(scoreGo);
+
+    // Lives
+    GameObject* livesGo = new GameObject();
+    livesGo->box.SetVec(Vec2(0, 32));
+    
+    CameraFollower* livesFollower = new CameraFollower(*livesGo, livesGo->box.GetVec());
+    livesGo->AddComponent(livesFollower);
+
+    Text* livesText = new Text(*livesGo, "./assets/font/call_me_maybe.ttf", 16, Text::BLENDED, "Lives ", {255, 255, 255, 255});
+    livesGo->AddComponent(livesText);
+    
+    AddObject(livesGo);
 }
 
 void StageState::Update(float dt)
@@ -120,34 +136,45 @@ void StageState::Update(float dt)
         popRequested = true;
 
     // Player is dead
-    if (PenguinBody::player == nullptr && !QuitRequested())
+    if (Ship::player == nullptr && !QuitRequested() && !PopRequested())
     {
-        GameData::playerVictory = false;
-        Game::GetInstance().Push(new EndState());
-        popRequested = true;
+        quitTimer.Update(dt);
+        if (quitTimer.Get() > 3.0)
+        {
+            GameData::playerVictory = false;
+            Game::GetInstance().Push(new EndState());
+            popRequested = true;
+
+            pair<string, int> highScore = GameData::GetHighScore();
+            if (GameData::score > highScore.second)
+                GameData::SetHighScore(pair<string, int>("LOL", GameData::score));
+        }
     }
 
-    // Aliens are dead
-    else if (Alien::alienCount <= 0 && !QuitRequested())
-    {
-        GameData::playerVictory = true;
-        Game::GetInstance().Push(new EndState());
-        popRequested = true;
-    }
+    // Create Asteroids if not at maximum capacity
+    if (Asteroid::asteroidCount < Asteroid::maxAsteroidCount)
+        AddAsteroid();
 
     // Updates GOs
     UpdateArray(dt);
 
     for (unsigned long i = 0; i < objectArray.size(); i++)
     {
+        // Updates Text - Turning into a component might be better 
+        Text* text = (Text*) objectArray[i]->GetComponent("Text");
+        if (text != nullptr) // Quickfix for selecting text
+        {
+            if (text->GetText()[0] == 'F') // FPS counter
+                text->SetText(("FPS " + to_string(int(GameData::currentFPS))).c_str());
+            else if (text->GetText()[0] == 'S') // Score counter
+                text->SetText(("Score " + to_string(GameData::score)).c_str());
+            else if (text->GetText()[0] == 'L') // Lives counter
+                text->SetText(("Lives " + to_string(GameData::playerLives)).c_str());
+        }
+        
         // Deletes GOs
         if (objectArray[i]->IsDead())
             objectArray.erase(objectArray.begin() + i);
-
-        // Updates FPS counter - Turning into a component might be better 
-        Text* FPS_Text = (Text*) objectArray[i]->GetComponent("Text");
-        if (FPS_Text != nullptr)
-            FPS_Text->SetText(("FPS " + to_string(floor(GameData::currentFPS))).c_str());
 
         // Checks for colisions
         else

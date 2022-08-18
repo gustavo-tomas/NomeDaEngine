@@ -3,6 +3,7 @@
 
 #include "State.h"
 #include "Timer.h"
+#include "Sprite.h"
 
 class TitleState : public State {
     public:
@@ -14,6 +15,11 @@ class TitleState : public State {
         void Start();
         void Pause();
         void Resume();
+
+    private:
+        Sprite* titleSprite;
+        Timer titleSpriteTimer;
+        int titleSpriteCounter;
 };
 
 #endif // TITLESTATE_H

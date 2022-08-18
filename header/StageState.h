@@ -5,7 +5,7 @@
 #include "Music.h"
 #include "GameObject.h"
 #include "State.h"
-#include "TileSet.h"
+#include "Timer.h"
 #include <vector>
 #include <memory>
 
@@ -21,9 +21,11 @@ class StageState : public State {
         void Start();
         void Pause();
         void Resume();
+        void AddAsteroid();
 
     private:
         Music backgroundMusic;
+        Timer quitTimer;
 };
 
 #endif // STAGESTATE_H

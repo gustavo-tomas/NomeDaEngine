@@ -16,12 +16,13 @@ class Text : public Component {
             BLENDED
         };
         Text(GameObject& associated, const char* fontFile, int fontSize,
-             TextStyle style, const char* text, SDL_Color color, float timeToBlink = -1);
+             TextStyle style, string text, SDL_Color color, float timeToBlink = -1);
         ~Text();
         void Update(float dt);
         void Render();
         bool Is(const char* type);
-        void SetText(const char* text);
+        string GetText();
+        void SetText(string text);
         void SetColor(SDL_Color color);
         void SetStyle(TextStyle style);
         void SetFontFile(const char* fontFile);
@@ -31,7 +32,7 @@ class Text : public Component {
         void RemakeTexture();
         TTF_Font* font;
         SDL_Texture* texture;
-        const char* text;
+        string text;
         TextStyle style;
         const char* fontFile;
         int fontSize;
