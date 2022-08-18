@@ -26,4 +26,4 @@ O jogo acaba quando o número de vidas do jogador atinge 0 (começa com 5 vidas)
 ![print da tela final](./assets/image/end_ps.png)
 
 ## Agradecimentos
-Obrigado [Luiz](https://github.com/luizschonarth) pelo feedback e sugestões e a todos que chegaram até aqui!
+Obrigado [Luiz](https://github.com/luizschonarth) :heart: pelo feedback e sugestões e a todos que chegaram até aqui!
